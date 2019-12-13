@@ -1,7 +1,7 @@
 <template>
   <div >
   <v-card class="pa-4 ma-4">
-    <LineChart :chartData="datacollection"></LineChart>
+    <BarChart :chartData="datacollection"></BarChart>
     <v-card-actions>
       <v-btn @click="fillData()">Randomize</v-btn>
     </v-card-actions>
@@ -10,11 +10,11 @@
 </template>
 
 <script>
-  import LineChart from './charts/Line.js'
+  import BarChart from './charts/Bar.js'
 
   export default {
     components: {
-      LineChart
+      BarChart
     },
     data () {
       return {
@@ -28,25 +28,20 @@
     methods: {
       fillData () {
         this.datacollection = {
-          labels: ['Red', 'Blue'],
+          labels: ['1', '2', '3','4','5','6','7'],
           datasets: [
             {
-              label: 'Egg Fried Rice',
-              backgroundColor: '#f80000',
-              data: [this.getRandomInt(), this.getRandomInt()]
+              label: 'Data One',
+              backgroundColor: '#007979',
+              data: [this.getRandomInt(), this.getRandomInt(), this.getRandomInt()]
             }, {
-              label: 'Black bean sauce',
-              backgroundColor: '#00ff00',
-              data: [this.getRandomInt(), this.getRandomInt()]
-            },
-            {
-              label: 'Popeye Spinach Fried Rice',
+              label: 'Data two',
+              backgroundColor: '#f87979',
+              data: [this.getRandomInt(), this.getRandomInt(), this.getRandomInt()]
+            }, {
+              label: 'Data three',
               backgroundColor: '#000079',
-              data: [this.getRandomInt(), this.getRandomInt()]
-            }, {
-              label: 'Eggplant Fried Rice with Lotus root Tteok-galbi',
-              backgroundColor: '#f0000f',
-              data: [this.getRandomInt(), this.getRandomInt()]
+              data: [this.getRandomInt(), this.getRandomInt(), this.getRandomInt()]
             }
           ]
         }
