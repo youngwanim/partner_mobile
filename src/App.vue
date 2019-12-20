@@ -11,7 +11,8 @@
       </v-app-bar>
       <div id="nav">
         <router-link to="/">INFO</router-link> |
-        <router-link to="/about">SALES</router-link>
+        <router-link to="/about">About</router-link> |
+        <router-link to="/sales">Sample</router-link>
       </div>
       <router-view/>
       <v-navigation-drawer
@@ -69,7 +70,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  background-color: #FFF176;
+  background-color: #e6e6e6;
   color: #795548;
 }
 

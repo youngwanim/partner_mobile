@@ -6,107 +6,84 @@
           item-text="label"
           label="Select Quarter"
         ></v-select>
-  <v-card v-for="(item, index) in ex_menuStatus"
-    v-bind:key="index" class="pa-1 ma-4">
-    <v-card-title class="pb-1 subtitle-1 amber--text text--darken-3 font-weight-black">MENU {{index+1}}</v-card-title>
-    <v-card-title class="pt-1 pb-1 subtitle-2 font-weight-bold">{{item.menu_name}}</v-card-title>
-    <v-card-text class="pb-1 font-weight-bold">
-       <v-list dense>
-          <template>
-            <v-list-item  class="pl-0 pr-0">
-              <v-list-item-content>Total sales revenue</v-list-item-content>
-              <v-list-item-content><p class="text-right mb-0">¥{{item.total_sales_revenue}}</p></v-list-item-content>
-            </v-list-item>
-            <v-list-item  class="pl-0 pr-0 grey--text" v-if="item.panel.length > 0">
-              <v-list-item-content class="grey--text text--darken-1">Price</v-list-item-content>
-              <v-list-item-content><p class="text-right mb-0 grey--text text--darken-1">¥{{item.price}}</p></v-list-item-content>
-            </v-list-item>
-            <v-list-item  class="pl-0 pr-0" v-if="item.panel.length > 0">
-              <v-list-item-content class="grey--text text--darken-1">Total # of dishes sold</v-list-item-content>
-              <v-list-item-content><p class="text-right mb-0 grey--text text--darken-1">¥{{item.total_sales_count}} dish(es)</p></v-list-item-content>
-            </v-list-item>
-            <v-list-item  class="pl-0 pr-0" v-if="item.panel.length > 0">
-              <v-list-item-content class="grey--text text--darken-1">Promotional discount</v-list-item-content>
-              <v-list-item-content><p class="text-right mb-0 deep-orange--text text-accent-4">-¥{{item.promotion_discount}}</p></v-list-item-content>
-            </v-list-item>
-          </template>
-        </v-list>
+  <v-card v-for="(item_menu, index_menu) in ex_menuStatus"
+    v-bind:key="index_menu" class="pa-1 ma-4">
+    <v-card-title class="amber--text text--darken-3 font-weight-bold">MENU 1{{item_menu.menu_id}}{{index_menu}}</v-card-title>
+    <v-card-text>
+      <v-list>
+        <v-divider></v-divider>
+         <template v-for="(item, index) in ex_menuStatus">
+           <v-list-item  three-line
+             :key="item.id"
+           >
+             <v-list-item-avatar>
+               <v-img :src="'http://viastelle-main.oss-cn-shanghai.aliyuncs.com/' + item.image_thumbnail"></v-img>
+             </v-list-item-avatar>
+
+             <v-list-item-content>
+               <v-list-item-subtitle v-html="item.menu_name"></v-list-item-subtitle>
+               <v-list-item-subtitle v-html="item.menu_name_cn"></v-list-item-subtitle>
+             </v-list-item-content>
+           </v-list-item>
+           <v-list-item
+             :key="item.id"
+           >
+             <v-list-item-content max-height="30">
+               <v-list-item-subtitle v-html="'price: ' + item.price"></v-list-item-subtitle>
+             </v-list-item-content>
+             <v-list-item-content max-height="30">
+               <v-list-item-subtitle class="red--text" v-if="!item.sales_status" v-html="'not selling anymore'"></v-list-item-subtitle>
+             </v-list-item-content>
+           </v-list-item>
+           <v-divider v-if="index < ex_menuStatus.length-1" :key="index"></v-divider>
+         </template>
+       </v-list>
      </v-card-text>
-     <div v-if="item.panel.length > 0">
-       <v-card-title class="pt-1 subtitle-2 font-weight-bold">SALES DETAIL</v-card-title>
-       <v-divider></v-divider>
-       <BarSalesCount :chartdata="datacollection"></BarSalesCount>
-       <v-card-title class="pt-1 subtitle-2 font-weight-bold">PRODUCT INFO.</v-card-title>
-       <v-divider></v-divider>
-       <v-card-text>
-          <v-list dense>
-             <template>
-               <v-list-item  class="pl-0 pr-0">
-                 <v-list-item-content>Sales start date</v-list-item-content>
-                 <v-list-item-content>Sales end date</v-list-item-content>
-               </v-list-item>
-               <v-list-item  class="pl-0 pr-0">
-                 <v-list-item-content><p class="text-left mb-0">{{item.sales_start_date}}</p></v-list-item-content>
-                 <v-list-item-content><p class="text-right mb-0">{{item.sales_end_date}}</p></v-list-item-content>
-               </v-list-item>
-             </template>
-           </v-list>
-        </v-card-text>
-      </div>
-      <v-expansion-panels v-model="item.panel" multiple>
-        <v-expansion-panel>
-          <v-expansion-panel-header class="orange--text font-weight-bold">{{detailTitle(item.panel)}}</v-expansion-panel-header>
-        </v-expansion-panel>
-      </v-expansion-panels>
   </v-card>
   <v-card class="pa-1 ma-4">
-    <v-card-title class="pb-1 subtitle-1 amber--text text--darken-3 font-weight-black">SUMMARY</v-card-title>
-    <v-card-text class="pb-1 font-weight-bold">
-       <v-list dense>
-          <template>
-            <v-list-item  class="pl-0 pr-0">
-              <v-list-item-content>Payment total</v-list-item-content>
-              <v-list-item-content><p class="text-right mb-0">¥dd</p></v-list-item-content>
-            </v-list-item>
-            <v-list-item  class="pl-0 pr-0 ">
-              <v-list-item-content>Profit share (5%)</v-list-item-content>
-              <v-list-item-content><p class="text-right mb-0">¥333</p></v-list-item-content>
-            </v-list-item>
-          </template>
-        </v-list>
+    <v-card-title>MENU 2</v-card-title>
+    <v-card-text>
+      <v-list>
+        <v-divider></v-divider>
+         <template v-for="(item, index) in ex_menuStatus">
+           <v-list-item  three-line
+             :key="item.id"
+           >
+             <v-list-item-avatar>
+               <v-img :src="'http://viastelle-main.oss-cn-shanghai.aliyuncs.com/' + item.image_thumbnail"></v-img>
+             </v-list-item-avatar>
+
+             <v-list-item-content>
+               <v-list-item-subtitle v-html="item.menu_name"></v-list-item-subtitle>
+               <v-list-item-subtitle v-html="item.menu_name_cn"></v-list-item-subtitle>
+             </v-list-item-content>
+           </v-list-item>
+           <v-list-item
+             :key="item.id"
+           >
+             <v-list-item-content max-height="30">
+               <v-list-item-subtitle v-html="'price: ' + item.price"></v-list-item-subtitle>
+             </v-list-item-content>
+             <v-list-item-content max-height="30">
+               <v-list-item-subtitle class="red--text" v-if="!item.sales_status" v-html="'not selling anymore'"></v-list-item-subtitle>
+             </v-list-item-content>
+           </v-list-item>
+           <v-divider v-if="index < ex_menuStatus.length-1" :key="index"></v-divider>
+         </template>
+       </v-list>
      </v-card-text>
   </v-card>
   </div>
 </template>
 
 <script>
-  import BarSalesCount from './charts/Bar.js'
   export default {
     components: {
-      BarSalesCount
     },
     data () {
       return {
-        panel: [],
         currentQuarter: null,
-        datacollection: {
-          labels: ['2019.10', '2019.11', '2019.12'],
-          datasets: [
-            {
-              label: 'Data One',
-              backgroundColor: '#007979',
-              data: [0, 1, 2]
-            }, {
-              label: 'Data two',
-              backgroundColor: '#f87979',
-              data: [0, 1, 2]
-            }, {
-              label: 'Data three',
-              backgroundColor: '#000079',
-              data: [0, 1, 2]
-            }
-          ]
-        },
+        datacollection: null,
         quarter: [
           {
             index: 0,
@@ -142,17 +119,6 @@
         ],
         targetYear: 2019,
         quarterList: [],
-        dataCollections: {
-          labels: ['2019.10', '2019.11','2019.12'],
-          datasets: [
-            {
-              label: 'MENU 1',
-              backgroundColor: '#ffb700',
-              barThickness: 30,
-              data: [177, 255, 155]
-            }
-          ]
-        },
         ex_menuStatus: [
           {
             menu_id: 82,
@@ -169,8 +135,7 @@
             labels: [],
             sales_detail: [
               40, 194, 0
-            ],
-            panel: []
+            ]
           },
           {
             menu_id: 83,
@@ -187,8 +152,7 @@
             labels: [],
             sales_detail: [
               40, 194, 200
-            ],
-            panel: []
+            ]
           },
           {
             menu_id: 113,
@@ -205,8 +169,7 @@
             labels: [],
             sales_detail: [
               0, 194, 100
-            ],
-            panel: []
+            ]
           },
           {
             menu_id: 114,
@@ -223,30 +186,23 @@
             labels: [],
             sales_detail: [
               40, 194, 200
-            ],
-            panel: []
+            ]
           }
 
         ]
       }
     },
+    computed: {
+
+    },
     created () {
       this.currentQuarter = this.createQuarterList('2018-10-10')
     },
     mounted () {
-      console.log('fillData in Info.vue by mount')
       this.fillData()
-    },
-    computed: {
+      console.log(this.currentQuarter)
     },
     methods: {
-      detailTitle (panel) {
-        if (panel.length > 0) {
-          return 'HIDE DETAILS'
-        } else{
-          return 'SHOW DETAILS'
-        }
-      },
       createLabelwithQuarter (year, quarter) {
         let leftYear = year, rightYear = year
         if (quarter === 0) {
@@ -338,16 +294,29 @@
       },
       fillData () {
         this.datacollection = {
-          labels: ['2019.10', '2019.11','2019.12'],
+          labels: ['Red', 'Blue'],
           datasets: [
             {
-              label: 'MENU 1',
-              backgroundColor: '#ffb700',
-              barThickness: 30,
-              data: [133, 255, 155]
+              label: 'Egg Fried Rice',
+              backgroundColor: '#f80000',
+              data: [this.getRandomInt(), this.getRandomInt()]
+            }, {
+              label: 'Black bean sauce',
+              backgroundColor: '#00ff00',
+              data: [this.getRandomInt(), this.getRandomInt()]
+            },
+            {
+              label: 'Popeye Spinach Fried Rice',
+              backgroundColor: '#000079',
+              data: [this.getRandomInt(), this.getRandomInt()]
+            }, {
+              label: 'Eggplant Fried Rice with Lotus root Tteok-galbi',
+              backgroundColor: '#f0000f',
+              data: [this.getRandomInt(), this.getRandomInt()]
             }
           ]
         }
+        console.log(JSON.stringify(this.datacollection))
       },
       getRandomInt () {
         return Math.floor(Math.random() * (50 - 5 + 1)) + 5
