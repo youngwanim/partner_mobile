@@ -275,7 +275,7 @@
           {
             label: '%{yearl} MAY - %{yearr} JUL',
             start_date: '%{yearl}-05-01',
-            end_date: '%{yearr}-07-30',
+            end_date: '%{yearr}-07-31',
             chart_label1: '%{yearl}.05',
             chart_label2: '%{yearl}.06',
             chart_label3: '%{yearl}.07'
@@ -283,7 +283,7 @@
           {
             label: '%{yearl} AUG - %{yearr} OCT',
             start_date: '%{yearl}-08-01',
-            end_date: '%{yearr}-10-30',
+            end_date: '%{yearr}-10-31',
             chart_label1: '%{yearl}.08',
             chart_label2: '%{yearl}.09',
             chart_label3: '%{yearl}.10'
