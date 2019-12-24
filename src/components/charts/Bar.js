@@ -32,6 +32,13 @@ export default {
         legend: {
           display: false
         },
+        layout: {
+            padding: {
+                left: 10,
+                right: 10,
+                top: 30
+            }
+        },
         plugins: {
             datalabels: {
                 align: 'end',
@@ -47,7 +54,8 @@ export default {
             }
         },
         responsive: true,
-        maintainAspectRatio: false
+        maintainAspectRatio: true,
+        aspectRatio: 1
       }
     }
   },

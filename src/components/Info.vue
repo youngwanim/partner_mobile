@@ -2,91 +2,103 @@
   <div class="partner_info">
     <v-select class="ma-4"
           v-model="currentQuarter"
-          :items="quarterList"
+          :items="getQuarterList"
           item-text="label"
+          @change="quarterSelect"
+          return-object
           label="Select Quarter"
         ></v-select>
-  <v-card v-for="(item, index) in ex_menuStatus"
-    v-bind:key="index" class="pa-1 ma-4">
-    <v-card-title class="pb-1 subtitle-1 amber--text text--darken-3 font-weight-black">MENU {{index+1}}</v-card-title>
-    <v-card-title class="pt-1 pb-1 subtitle-2 font-weight-bold">{{item.menu_name}}</v-card-title>
-    <v-card-text class="pb-1 font-weight-bold">
-       <v-list dense>
-          <template>
-            <v-list-item  class="pl-0 pr-0">
-              <v-list-item-content>Total sales revenue</v-list-item-content>
-              <v-list-item-content><p class="text-right mb-0">¥{{item.total_sales_revenue}}</p></v-list-item-content>
-            </v-list-item>
-            <v-list-item  class="pl-0 pr-0 grey--text" v-if="item.panel.length > 0">
-              <v-list-item-content class="grey--text text--darken-1">Price</v-list-item-content>
-              <v-list-item-content><p class="text-right mb-0 grey--text text--darken-1">¥{{item.price}}</p></v-list-item-content>
-            </v-list-item>
-            <v-list-item  class="pl-0 pr-0" v-if="item.panel.length > 0">
-              <v-list-item-content class="grey--text text--darken-1">Total # of dishes sold</v-list-item-content>
-              <v-list-item-content><p class="text-right mb-0 grey--text text--darken-1">¥{{item.total_sales_count}} dish(es)</p></v-list-item-content>
-            </v-list-item>
-            <v-list-item  class="pl-0 pr-0" v-if="item.panel.length > 0">
-              <v-list-item-content class="grey--text text--darken-1">Promotional discount</v-list-item-content>
-              <v-list-item-content><p class="text-right mb-0 deep-orange--text text-accent-4">-¥{{item.promotion_discount}}</p></v-list-item-content>
-            </v-list-item>
-          </template>
-        </v-list>
-     </v-card-text>
-     <div v-if="item.panel.length > 0">
-       <v-card-title class="pt-1 subtitle-2 font-weight-bold">SALES DETAIL</v-card-title>
-       <v-divider></v-divider>
-       <BarSalesCount :chartdata="datacollection"></BarSalesCount>
-       <v-card-title class="pt-1 subtitle-2 font-weight-bold">PRODUCT INFO.</v-card-title>
-       <v-divider></v-divider>
-       <v-card-text>
-          <v-list dense>
-             <template>
-               <v-list-item  class="pl-0 pr-0">
-                 <v-list-item-content>Sales start date</v-list-item-content>
-                 <v-list-item-content>Sales end date</v-list-item-content>
-               </v-list-item>
-               <v-list-item  class="pl-0 pr-0">
-                 <v-list-item-content><p class="text-left mb-0">{{item.sales_start_date}}</p></v-list-item-content>
-                 <v-list-item-content><p class="text-right mb-0">{{item.sales_end_date}}</p></v-list-item-content>
-               </v-list-item>
-             </template>
-           </v-list>
-        </v-card-text>
-      </div>
-      <v-expansion-panels v-model="item.panel" multiple>
-        <v-expansion-panel>
-          <v-expansion-panel-header class="orange--text font-weight-bold">{{detailTitle(item.panel)}}</v-expansion-panel-header>
-        </v-expansion-panel>
-      </v-expansion-panels>
-  </v-card>
-  <v-card class="pa-1 ma-4">
-    <v-card-title class="pb-1 subtitle-1 amber--text text--darken-3 font-weight-black">SUMMARY</v-card-title>
-    <v-card-text class="pb-1 font-weight-bold">
-       <v-list dense>
-          <template>
-            <v-list-item  class="pl-0 pr-0">
-              <v-list-item-content>Payment total</v-list-item-content>
-              <v-list-item-content><p class="text-right mb-0">¥dd</p></v-list-item-content>
-            </v-list-item>
-            <v-list-item  class="pl-0 pr-0 ">
-              <v-list-item-content>Profit share (5%)</v-list-item-content>
-              <v-list-item-content><p class="text-right mb-0">¥333</p></v-list-item-content>
-            </v-list-item>
-          </template>
-        </v-list>
-     </v-card-text>
-  </v-card>
+    <div class="text-center" v-if="getLoading">
+      <v-progress-circular
+        indeterminate
+        color="amber"
+      ></v-progress-circular>
+    </div>
+    <div v-else>
+    <v-card v-for="(item, index) in getSalesInfo"
+      v-bind:key="index" class="pa-1 ma-4">
+      <v-card-title class="pb-1 subtitle-1 amber--text text--darken-3 font-weight-black">MENU {{index+1}}</v-card-title>
+      <v-card-title class="pt-1 pb-1 subtitle-2 font-weight-bold">{{item.menu_name}}</v-card-title>
+      <v-card-text class="pb-5 font-weight-bold">
+         <v-list dense>
+            <template>
+              <v-list-item  class="pl-0 pr-0">
+                <v-list-item-content>Total sales revenue</v-list-item-content>
+                <v-list-item-content><p class="text-right mb-0">¥{{item.total_sales_revenue}}</p></v-list-item-content>
+              </v-list-item>
+              <v-list-item  class="pl-0 pr-0 grey--text" v-if="item.panel.length > 0">
+                <v-list-item-content class="grey--text text--darken-1">Price</v-list-item-content>
+                <v-list-item-content><p class="text-right mb-0 grey--text text--darken-1">¥{{item.price}}</p></v-list-item-content>
+              </v-list-item>
+              <v-list-item  class="pl-0 pr-0" v-if="item.panel.length > 0">
+                <v-list-item-content class="grey--text text--darken-1">Total # of dishes sold</v-list-item-content>
+                <v-list-item-content><p class="text-right mb-0 grey--text text--darken-1">¥{{item.total_sales_count}} dish(es)</p></v-list-item-content>
+              </v-list-item>
+              <v-list-item  class="pl-0 pr-0" v-if="item.panel.length > 0">
+                <v-list-item-content class="grey--text text--darken-1">Promotional discount</v-list-item-content>
+                <v-list-item-content><p class="text-right mb-0 deep-orange--text text-accent-4">-¥{{item.promotion_discount}}</p></v-list-item-content>
+              </v-list-item>
+            </template>
+          </v-list>
+       </v-card-text>
+       <div v-if="item.panel.length > 0">
+         <v-card-title class="pt-1 pb-0 subtitle-2 font-weight-black">SALES DETAIL</v-card-title>
+         <v-divider class="mb-2"></v-divider>
+         <BarSalesCount :chartdata="getSalesChartInfo[item.menu_id]"></BarSalesCount>
+         <v-card-title class="pt-8 pb-0 subtitle-2 font-weight-black">PRODUCT INFO.</v-card-title>
+         <v-divider></v-divider>
+         <v-card-text class="pt-0">
+            <v-list dense>
+               <template>
+                 <v-list-item  class="pl-0 pr-0">
+                   <v-list-item-content class="grey--text text--darken-1 font-weight-bold">Sales start date</v-list-item-content>
+                   <v-list-item-content><p class="grey--text text--darken-1 text-right mb-0 font-weight-bold">Sales end date</p></v-list-item-content>
+                 </v-list-item>
+                 <v-list-item  class="pl-0 pr-0">
+                   <v-list-item-content><p class="text-left mb-0">{{item.sales_start_date}}</p></v-list-item-content>
+                   <v-list-item-content><p class="text-right mb-0">{{item.sales_end_date}}</p></v-list-item-content>
+                 </v-list-item>
+               </template>
+             </v-list>
+          </v-card-text>
+        </div>
+        <v-expansion-panels v-model="item.panel" multiple>
+          <v-expansion-panel>
+            <v-expansion-panel-header class="orange--text font-weight-bold">{{detailTitle(item.panel)}}</v-expansion-panel-header>
+          </v-expansion-panel>
+        </v-expansion-panels>
+    </v-card>
+    <v-card class="pa-1 ma-4">
+      <v-card-title class="pb-1 subtitle-1 amber--text text--darken-3 font-weight-black">SUMMARY</v-card-title>
+      <v-card-text class="pb-1 font-weight-bold">
+         <v-list dense>
+            <template>
+              <v-list-item  class="pl-0 pr-0">
+                <v-list-item-content>Payment total</v-list-item-content>
+                <v-list-item-content><p class="text-right mb-0">¥dd</p></v-list-item-content>
+              </v-list-item>
+              <v-list-item  class="pl-0 pr-0 ">
+                <v-list-item-content>Profit share (5%)</v-list-item-content>
+                <v-list-item-content><p class="text-right mb-0">¥333</p></v-list-item-content>
+              </v-list-item>
+            </template>
+          </v-list>
+       </v-card-text>
+    </v-card>
+    </div>
   </div>
 </template>
 
 <script>
   import BarSalesCount from './charts/Bar.js'
+  import {mapGetters, mapMutations, mapActions} from 'vuex'
   export default {
     components: {
       BarSalesCount
     },
     data () {
       return {
+        bLoading: true,
         panel: [],
         currentQuarter: null,
         datacollection: {
@@ -231,110 +243,54 @@
       }
     },
     created () {
-      this.currentQuarter = this.createQuarterList('2018-10-10')
+      this.setFirstOrderDate('2018-10-10')
+      this.createQuarterList()
+      this.currentQuarter = this.getQuarterList[0]
+      console.log(this.currentQuarter)
+      this.GET_SALES_INFO({
+        res_type: 'month',
+        start_date: this.currentQuarter.start_date,
+        end_date: this.currentQuarter.end_date
+      })
     },
     mounted () {
       console.log('fillData in Info.vue by mount')
       this.fillData()
     },
     computed: {
+      ...mapGetters('salesinfo', [
+        'getLoading',
+        'getSalesInfo',
+        'getSalesChartInfo',
+        'getRestaurantID',
+        'getQuarterList',
+        'getSelectedQuarterListIndex'
+      ]),
     },
     methods: {
+      ...mapMutations('salesinfo', [
+        'setSelectedQuarter',
+        'setFirstOrderDate',
+        'createQuarterList'
+      ]),
+      ...mapActions('salesinfo', [
+        'GET_SALES_INFO'
+      ]),
+      quarterSelect (value) {
+        console.log('value: ', value)
+        this.setSelectedQuarter(this.currentQuarter)
+        this.GET_SALES_INFO({
+          res_type: 'month',
+          start_date: value.start_date,
+          end_date: value.end_date
+        })
+      },
       detailTitle (panel) {
         if (panel.length > 0) {
           return 'HIDE DETAILS'
         } else{
           return 'SHOW DETAILS'
         }
-      },
-      createLabelwithQuarter (year, quarter) {
-        let leftYear = year, rightYear = year
-        if (quarter === 0) {
-          leftYear -= 1
-        }
-        leftYear = leftYear.toString()
-        rightYear = rightYear.toString()
-
-        let quarterTemplate = [
-          {
-            label: '%{yearl} NOV - %{yearr} JAN',
-            start_date: '%{yearl}-11-01',
-            end_date: '%{yearr}-01-31',
-            chart_label1: '%{yearl}.11',
-            chart_label2: '%{yearl}.12',
-            chart_label3: '%{yearr}.01'
-          },
-          {
-            label: '%{yearl} FEB - %{yearr} APR',
-            start_date: '%{yearl}-02-01',
-            end_date: '%{yearr}-04-30',
-            chart_label1: '%{yearl}.02',
-            chart_label2: '%{yearl}.03',
-            chart_label3: '%{yearl}.04'
-          },
-          {
-            label: '%{yearl} MAY - %{yearr} JUL',
-            start_date: '%{yearl}-05-01',
-            end_date: '%{yearr}-07-31',
-            chart_label1: '%{yearl}.05',
-            chart_label2: '%{yearl}.06',
-            chart_label3: '%{yearl}.07'
-          },
-          {
-            label: '%{yearl} AUG - %{yearr} OCT',
-            start_date: '%{yearl}-08-01',
-            end_date: '%{yearr}-10-31',
-            chart_label1: '%{yearl}.08',
-            chart_label2: '%{yearl}.09',
-            chart_label3: '%{yearl}.10'
-          }
-        ]
-        let retObj = {}
-        //retObj.label = retObj.label.replace('%{yearl}', leftYear.toString())
-        for (let key in quarterTemplate[quarter]) {
-          retObj[key] = quarterTemplate[quarter][key]
-            .replace('%{yearl}', leftYear)
-            .replace('%{yearr}', rightYear)
-        }
-        return retObj
-      },
-      getQuarter(month) {
-        let quarter = 0
-        for (let i=0;i<this.quarter.length; i++) {
-          if (this.quarter[i].month.includes(month)) {
-            quarter = this.quarter[i].index
-            break
-          }
-        }
-        return quarter
-      },
-      createQuarterList (firstOrderDate) {
-        let d = new Date()
-        let startMonth = d.getMonth()
-        let startYear = d.getFullYear()
-        let startQuarter = this.getQuarter(startMonth)
-        if (startQuarter === 0){
-          startYear += 1
-        }
-
-        let firstOrderDateObj = new Date(firstOrderDate)
-        let firstOrderMonth = firstOrderDateObj.getMonth()
-        let endYear = firstOrderDateObj.getFullYear()
-        let endQuarter = this.getQuarter(firstOrderMonth)
-
-        do {
-          this.quarterList.push(this.createLabelwithQuarter(startYear, startQuarter))
-          if (startYear === endYear && startQuarter === endQuarter) {
-            break
-          } else {
-            startQuarter -= 1
-            if (startQuarter < 0) {
-              startYear -= 1
-              startQuarter += 4
-            }
-          }
-        } while (!(startYear === endYear && startQuarter === endQuarter))
-        return this.quarterList[0]
       },
       fillData () {
         this.datacollection = {
