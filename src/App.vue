@@ -70,7 +70,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  background-color: #e6e6e6;
+  background-color: #ffffff;
   color: #795548;
 }
 

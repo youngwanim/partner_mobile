@@ -2,7 +2,7 @@ import st_config from '@/config/config.js'
 
 export default {
   login: {
-    url: st_config.api_url + '/platform/operators/sign/',
+    url: st_config.resApi_url + '/partners/sign',
     method: 'post',
     headers: get_header_info()
   },
