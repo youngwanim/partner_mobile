@@ -9,7 +9,7 @@
         <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
         <v-toolbar-title class="font-weight-bold">Report from Via Stelle </v-toolbar-title>
       </v-app-bar>
-      <div id="nav">
+      <div id="nav" v-if="getAuthState">
         <router-link to="/">INFO</router-link> |
         <router-link to="/about">About</router-link> |
         <router-link to="/sales">Sample</router-link>
@@ -51,12 +51,21 @@
   </div>
 </template>
 <script>
+  import {mapGetters} from 'vuex'
+  
   export default {
     data: () => ({
       drawer: false,
       group: null,
     }),
-
+    computed: {
+      ...mapGetters([
+        'getAccount',
+        'getPassword',
+        'getAuthState',
+        'getLoginFail'
+      ])
+    },
     watch: {
       group () {
         this.drawer = false

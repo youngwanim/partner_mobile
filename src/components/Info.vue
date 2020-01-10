@@ -22,9 +22,8 @@
           v-for="(item, index) in getSalesInfo"
           v-bind:key="index"
           class="pt-0 pb-0"
-        cols="auto"
       >
-    <v-card class="pa-1 ma-4" :elevation="index - 1" min-height="230" max-width="330">
+    <v-card class="pa-1 ma-4"  min-height="200" min-width="300" max-width="330">
       <v-card-title class="pb-1 subtitle-1 amber--text text--darken-3 font-weight-black">MENU {{index+1}}</v-card-title>
       <v-card-title class="pt-1 pb-1 subtitle-2 font-weight-bold">{{item.menu_name}}</v-card-title>
       <v-card-text class="pb-5 font-weight-bold">

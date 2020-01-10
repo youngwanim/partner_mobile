@@ -1,3 +1,4 @@
+import router from '@/router'
 import api from '@/api/api.js'
 
 const type = {
@@ -165,7 +166,7 @@ const actions = {
     state.bLoading = true
     api.async_call('getSalesInfo', '', {
       '{res_type}': res_type,
-      '{restaurant_id}': state.restaurant_id,
+      // '{restaurant_id}': state.restaurant_id,
       '{start_date}': start_date,
       '{end_date}': end_date
     }).then((result) => {
@@ -204,6 +205,11 @@ const actions = {
       commit('setSalesChartInfo', salesChart)
       commit('setSalesInfo', salesArray)
       state.bLoading = false
+    }).catch(() => {
+      state.loginFail = true
+      state.bLoading = false
+      commit('setAuthState', false)
+      router.push('/')
     })
   }
 }
