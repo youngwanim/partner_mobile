@@ -71,7 +71,6 @@
     },
     created() {
       if (VueCookies.get('openid') && VueCookies.get('token')) {
-        console.log('openid&token: ', VueCookies.get('openid'), VueCookies.get('token') )
         this.validation()
       }
     },

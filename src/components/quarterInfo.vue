@@ -1,14 +1,5 @@
 <template>
-  <div class="partner_info">
-    <v-select class="ma-4"
-          v-model="currentQuarter"
-          :items="getQuarterList"
-          item-text="label"
-          @change="quarterSelect"
-          return-object
-          label="Select Quarter"
-          outlined
-        ></v-select>
+  <div class="quarter_info">
     <div class="text-center" v-if="getLoading">
       <v-progress-circular
         indeterminate
@@ -16,85 +7,50 @@
       ></v-progress-circular>
     </div>
     <div v-else>
-    <v-container fluid>
-      <v-row justify="start">
-        <v-col
-          v-for="(item, index) in getSalesInfo"
-          v-bind:key="index"
-          class="pt-0 pb-0"
-      >
-    <v-card class="pa-1 ma-4"  min-height="200" min-width="300" max-width="330">
-      <v-card-title class="pb-1 subtitle-1 amber--text text--darken-3 font-weight-black">MENU {{index+1}}</v-card-title>
-      <v-card-title class="pt-1 pb-1 subtitle-2 font-weight-bold">{{item.menu_name}}</v-card-title>
-      <v-card-text class="pb-5 font-weight-bold">
-         <v-list dense>
-            <template>
-              <v-list-item  class="pl-0 pr-0">
-                <v-list-item-content>Total sales revenue</v-list-item-content>
-                <v-list-item-content><p class="text-right mb-0">¥{{item.total_sales_revenue}}</p></v-list-item-content>
-              </v-list-item>
-              <v-list-item  class="pl-0 pr-0 grey--text" v-if="item.panel.length > 0">
-                <v-list-item-content class="grey--text text--darken-1">Price</v-list-item-content>
-                <v-list-item-content><p class="text-right mb-0 grey--text text--darken-1">¥{{item.price}}</p></v-list-item-content>
-              </v-list-item>
-              <v-list-item  class="pl-0 pr-0" v-if="item.panel.length > 0">
-                <v-list-item-content class="grey--text text--darken-1">Total # of dishes sold</v-list-item-content>
-                <v-list-item-content><p class="text-right mb-0 grey--text text--darken-1">¥{{item.total_sales_count}} dish(es)</p></v-list-item-content>
-              </v-list-item>
-              <v-list-item  class="pl-0 pr-0" v-if="item.panel.length > 0">
-                <v-list-item-content class="grey--text text--darken-1">Promotional discount</v-list-item-content>
-                <v-list-item-content><p class="text-right mb-0 deep-orange--text text-accent-4">-¥{{item.promotion_discount}}</p></v-list-item-content>
-              </v-list-item>
-            </template>
-          </v-list>
-       </v-card-text>
-       <div v-if="item.panel.length > 0">
-         <v-card-title class="pt-1 pb-0 subtitle-2 font-weight-black">SALES DETAIL</v-card-title>
-         <v-divider class="mb-2"></v-divider>
-         <BarSalesCount :chartdata="getSalesChartInfo[item.menu_id]"></BarSalesCount>
-         <v-card-title class="pt-8 pb-0 subtitle-2 font-weight-black">PRODUCT INFO.</v-card-title>
-         <v-divider></v-divider>
-         <v-card-text class="pt-0">
-            <v-list dense>
-               <template>
-                 <v-list-item  class="pl-0 pr-0">
-                   <v-list-item-content class="grey--text text--darken-1 font-weight-bold">Sales start date</v-list-item-content>
-                   <v-list-item-content><p class="grey--text text--darken-1 text-right mb-0 font-weight-bold">Sales end date</p></v-list-item-content>
-                 </v-list-item>
-                 <v-list-item  class="pl-0 pr-0">
-                   <v-list-item-content><p class="text-left mb-0">{{item.sales_start_date}}</p></v-list-item-content>
-                   <v-list-item-content><p class="text-right mb-0">{{item.sales_end_date}}</p></v-list-item-content>
-                 </v-list-item>
-               </template>
-             </v-list>
-          </v-card-text>
-        </div>
-        <v-expansion-panels v-model="item.panel" multiple>
-          <v-expansion-panel>
-            <v-expansion-panel-header class="orange--text font-weight-bold">{{detailTitle(item.panel)}}</v-expansion-panel-header>
-          </v-expansion-panel>
-        </v-expansion-panels>
-    </v-card>
-  </v-col>
-    </v-row>
-  </v-container>
-    <v-card class="pa-1 ma-7" max-width="330">
-      <v-card-title class="pb-1 subtitle-1 amber--text text--darken-3 font-weight-black">SUMMARY</v-card-title>
-      <v-card-text class="pb-1 font-weight-bold">
-         <v-list dense>
-            <template>
-              <v-list-item  class="pl-0 pr-0">
-                <v-list-item-content>Payment total</v-list-item-content>
-                <v-list-item-content><p class="text-right mb-0">¥dd</p></v-list-item-content>
-              </v-list-item>
-              <v-list-item  class="pl-0 pr-0 ">
-                <v-list-item-content>Profit share (5%)</v-list-item-content>
-                <v-list-item-content><p class="text-right mb-0">¥333</p></v-list-item-content>
-              </v-list-item>
-            </template>
-          </v-list>
-       </v-card-text>
-    </v-card>
+      <v-card class="ma-4">
+        <v-card-title class=" subtitle-1 amber--text text--darken-3 font-weight-black">Sales report</v-card-title>
+        <v-divider class="ml-4 mr-4"></v-divider>
+        <v-row justify="end">
+          <v-col cols="7"
+            md="2">
+            <v-select class="quarter-select mr-4"
+              v-model="currentQuarter"
+              :items="getQuarterList"
+              item-text="label"
+              @change="quarterSelect"
+              return-object
+              min-height="23"
+              dense
+              outlined
+            ></v-select>
+          </v-col>
+        </v-row>
+        <BarSalesCount :width="274" :height="144" :chartdata="getSalesChartInfo"></BarSalesCount>
+        <v-card-text class="pb-5 font-weight-bold">
+           <v-list dense>
+              <template>
+                <v-list-item  class="pl-0 pr-0">
+                  <v-list-item-content class="grey--text text--darken-1">Total # of dishes sold</v-list-item-content>
+                  <v-list-item-content><p class="text-right mb-0 grey--text text--darken-1">¥{{getSalesInfo.total_sales_count}} dish(es)</p></v-list-item-content>
+                </v-list-item>
+                <v-list-item  class="pl-0 pr-0">
+                  <v-list-item-content class="grey--text text--darken-1">Promotional discount</v-list-item-content>
+                  <v-list-item-content><p class="text-right mb-0 deep-orange--text text-accent-4">-¥{{getSalesInfo.promotion_discount}}</p></v-list-item-content>
+                </v-list-item>
+                <v-list-item  class="pl-0 pr-0">
+                  <v-list-item-content>Total sales revenue</v-list-item-content>
+                  <v-list-item-content><p class="text-right mb-0">¥{{getSalesInfo.total_sales_revenue}}</p></v-list-item-content>
+                </v-list-item>
+                <v-list-item  class="pl-0 pr-0 grey--text">
+                  <v-list-item-content class="grey--text text--darken-1">Profit share (5%)</v-list-item-content>
+                  <v-list-item-content><p class="text-right mb-0 grey--text text--darken-1">¥{{getSalesInfo.total_sales_revenue * 0.05}}</p></v-list-item-content>
+                </v-list-item>
+
+
+              </template>
+            </v-list>
+         </v-card-text>
+      </v-card>
     </div>
   </div>
 </template>
@@ -319,9 +275,31 @@
   }
 </script>
 
-<style>
-  .partner_info {
+<style lang="scss">
+
+  .v-select__selections {
+    input { display: none}
+    .v-select__selection {
+      font-size: 9px;
+    }
+    .v-select__selection--comma{
+      margin: 0;
+    }
+  }
+  .v-text-field__details{
+    display:none;
+  }
+  .quarter_info {
     text-align: left;
+    .quarter-select {
+      &.v-text-field--outlined,&.v-input--dense,&.v-text-field--outlined{
+        .v-input__control {
+          .v-input__slot {
+            min-height: 20px;
+          }
+        }
+      }
+    }
   }
   .small {
     max-width: 600px;

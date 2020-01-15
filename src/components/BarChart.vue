@@ -22,7 +22,6 @@
       }
     },
     mounted () {
-      console.log('mounted')
       this.fillData()
     },
     methods: {

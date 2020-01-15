@@ -46,7 +46,7 @@ function createLabelwithQuarter (year, quarter) {
 
   let quarterTemplate = [
     {
-      label: '%{yearl} NOV - %{yearr} JAN',
+      label: '%{yearl}.11 ~ %{yearr}.01',
       start_date: '%{yearl}-11-01',
       end_date: '%{yearr}-01-31',
       chart_label1: '%{yearl}.11',
@@ -54,7 +54,7 @@ function createLabelwithQuarter (year, quarter) {
       chart_label3: '%{yearr}.01'
     },
     {
-      label: '%{yearl} FEB - %{yearr} APR',
+      label: '%{yearl}.02 ~ %{yearr}.04',
       start_date: '%{yearl}-02-01',
       end_date: '%{yearr}-04-30',
       chart_label1: '%{yearl}.02',
@@ -62,7 +62,7 @@ function createLabelwithQuarter (year, quarter) {
       chart_label3: '%{yearl}.04'
     },
     {
-      label: '%{yearl} MAY - %{yearr} JUL',
+      label: '%{yearl}.05 ~ %{yearr}.07',
       start_date: '%{yearl}-05-01',
       end_date: '%{yearr}-07-31',
       chart_label1: '%{yearl}.05',
@@ -70,7 +70,7 @@ function createLabelwithQuarter (year, quarter) {
       chart_label3: '%{yearl}.07'
     },
     {
-      label: '%{yearl} AUG - %{yearr} OCT',
+      label: '%{yearl}.08 ~ %{yearr}.10',
       start_date: '%{yearl}-08-01',
       end_date: '%{yearr}-10-31',
       chart_label1: '%{yearl}.08',
@@ -93,7 +93,7 @@ const state = {
   bLoading: false,
   restaurant_id: 12,
   quarterList: [],
-  salesInfo: [],
+  salesInfo: null,
   salesChartInfo: {},
   firstOrderDate: '',
   selectedQuarter: {}
@@ -132,7 +132,7 @@ const mutations = {
     let startMonth = d.getMonth()
     let startYear = d.getFullYear()
     let startQuarter = getQuarter(startMonth)
-    if (startQuarter === 0){
+    if (startQuarter === 0 && startMonth !== 0){
       startYear += 1
     }
 
@@ -170,7 +170,57 @@ const actions = {
       '{start_date}': start_date,
       '{end_date}': end_date
     }).then((result) => {
-      console.log(result.data)
+      //returned data is not array. transform the data into array
+      let salesData = {}
+      let salesChart = {}
+
+      let item = result.data.data
+      item['panel'] = []
+      item['total_sales_revenue'] = Math.round(
+        item['total_sales_revenue'] * Math.pow(10,2)
+      ) / Math.pow(10,2)
+      item['promotion_discount'] = Math.round(
+        item['promotion_discount'] * Math.pow(10,2)
+      ) / Math.pow(10,2)
+      salesData = item
+      salesChart = {
+        labels : [
+          state.selectedQuarter.chart_label1,
+          state.selectedQuarter.chart_label2,
+          state.selectedQuarter.chart_label3,
+        ],
+        datasets : [
+          {
+            label: 'MENU ',
+            backgroundColor: '#ffb700',
+            barThickness: 30,
+            data: item.label
+          }
+        ]
+      }
+      commit('setSalesChartInfo', salesChart)
+      commit('setSalesInfo', salesData)
+      state.bLoading = false
+    }).catch((error) => {
+      console.log('error on sales API, ', error)
+      state.loginFail = true
+      state.bLoading = false
+      commit('setAuthState', false)
+      router.push('/')
+    })
+  },
+  [type.GET_SALES_INFO_PER_MENU]({commit, state}, payload) {
+    let res_type = payload.res_type
+    let start_date = payload.start_date
+    let end_date = payload.end_date
+
+    state.bLoading = true
+    api.async_call('getSalesInfo', '', {
+      '{res_type}': res_type,
+      // '{restaurant_id}': state.restaurant_id,
+      '{start_date}': start_date,
+      '{end_date}': end_date
+    }).then((result) => {
       //returned data is not array. transform the data into array
       let salesArray = []
       let salesChart = {}
@@ -205,7 +255,8 @@ const actions = {
       commit('setSalesChartInfo', salesChart)
       commit('setSalesInfo', salesArray)
       state.bLoading = false
-    }).catch(() => {
+    }).catch((error) => {
+      console.log('error on sales API, ', error)
       state.loginFail = true
       state.bLoading = false
       commit('setAuthState', false)

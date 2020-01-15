@@ -43,9 +43,7 @@ export const store = new Vuex.Store({
         'account': state.account,
         'password': state.password
       }
-      console.log(state.account, state.password)
       return api.async_call('login', param).then((result) => {
-        console.log(result)
         sessionStorage.setItem('token', result.data.token)
         sessionStorage.setItem('openid', result.data.openid)
         VueCookies.set('openid', result.data.openid)
@@ -53,7 +51,7 @@ export const store = new Vuex.Store({
         commit('setName', result.data.name)
         commit('setAuthState', true)
         axios.defaults.headers.common['Authorization'] = `Bearer ${result.data.token}`
-        router.push('/home')
+        router.push('/quarter')
       }).catch(() => {
         state.loginFail = true
         VueCookies.remove('openid')
@@ -67,10 +65,9 @@ export const store = new Vuex.Store({
       }
 
       return api.async_call('validation').then((result) => {
-        console.log(result)
         commit('setName', result.data.name)
         commit('setAuthState', true)
-        router.push('/home')
+        router.push('/quarter')
       }).catch(() => {
         state.loginFail = true
         axios.defaults.headers.common['Authorization'] = null

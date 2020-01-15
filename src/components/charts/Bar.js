@@ -17,7 +17,8 @@ export default {
         scales: {
           yAxes: [{
             ticks: {
-              beginAtZero: true
+              beginAtZero: true,
+              suggestedMax: 140
             },
             gridLines: {
               display: true
@@ -34,8 +35,8 @@ export default {
         },
         layout: {
             padding: {
-                left: 10,
-                right: 10,
+                left: 26,
+                right: 26,
                 top: 30
             }
         },
@@ -60,6 +61,19 @@ export default {
     }
   },
   mounted () {
+    let maxSuggested = 10
+    let maxValue = 0
+    if (this.chartdata){
+      maxValue = Math.max(...this.chartdata.datasets[0].data)
+    }
+
+    if (maxValue > 0) {
+      maxSuggested = Math.ceil(maxValue * 5 / 4)
+      maxSuggested -= maxSuggested%10
+    }
+    this.options.scales.yAxes[0].ticks.suggestedMax = maxSuggested
+    console.log('maxValue from data: ', maxValue, maxSuggested)
+    console.log('chartdata: ', JSON.stringify(this.chartdata))
     // this.chartData is created in the mixin.
     // If you want to pass options please create a local options object
     //Chart.defaults.global.plugins.datalabels.display = false;

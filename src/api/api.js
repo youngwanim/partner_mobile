@@ -18,7 +18,7 @@ export default {
       data: param || {}
     }).catch((error) => {
       const err = error.response.data
-      console.log(err);
+      console.log('error with axios: ', err);
       if(err.code === 500) {
         alert(err.message)
         return
