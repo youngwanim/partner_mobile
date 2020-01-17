@@ -23,7 +23,7 @@
             <router-link to="/quarter">BY QUARTER</router-link>
           </v-tab>
           <v-tab>
-            <router-link to="/about">BY MENU</router-link>
+            <router-link to="/menu">BY MENU</router-link>
           </v-tab>
           <v-tab>
             <router-link to="/sales">BY MONTH</router-link>

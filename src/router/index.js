@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Quarter from '../views/Quarter.vue'
+import MenuInfo from '../views/Menu.vue'
 import Login from '../views/Login.vue'
 import BarSample from '../views/BarSample.vue'
 //import HomeTest from '../views/Home_test.vue'
@@ -27,6 +28,11 @@ const routes = [
     path: '/quarter',
     name: 'Quarter',
     component: Quarter
+  },
+  {
+    path: '/menu',
+    name: 'Menu',
+    component: MenuInfo
   },
   {
     path: '/sample',

@@ -3,6 +3,7 @@ import api from '@/api/api.js'
 
 const type = {
   GET_SALES_INFO: 'GET_SALES_INFO',
+  GET_SALES_INFO_PER_MENU: 'GET_SALES_INFO_PER_MENU'
 }
 
 const quarterRef = [
@@ -95,6 +96,8 @@ const state = {
   quarterList: [],
   salesInfo: null,
   salesChartInfo: {},
+  menuSalesInfo: null,
+  menuSalesChartInfo: {},
   firstOrderDate: '',
   selectedQuarter: {}
 }
@@ -103,6 +106,8 @@ const getters = {
   getLoading: state => state.bLoading,
   getSalesInfo: state => state.salesInfo,
   getSalesChartInfo: state => state.salesChartInfo,
+  getMenuSalesInfo: state => state.menuSalesInfo,
+  getMenuSalesChartInfo: state => state.menuSalesChartInfo,
   getRestaurantID: state => state.restaurant_id,
   getQuarterList: state => state.quarterList,
   getSelectedQuarter: state => state.selectedQuarter
@@ -118,14 +123,20 @@ const mutations = {
   setFirstOrderDate(state, payload) {
     state.firstOrderDate = payload
   },
-  setSalesInfo(state, payload) {
-    state.salesInfo = payload
-  },
   setSelectedQuarter(state, payload) {
     state.selectedQuarter = payload
   },
+  setSalesInfo(state, payload) {
+    state.salesInfo = payload
+  },
   setSalesChartInfo(state, payload) {
     state.salesChartInfo = payload
+  },
+  setMenuSalesInfo(state, payload) {
+    state.menuSalesInfo = payload
+  },
+  setMenuSalesChartInfo(state, payload) {
+    state.menuSalesChartInfo = payload
   },
   createQuarterList(state) {
     let d = new Date()
@@ -215,7 +226,7 @@ const actions = {
     let end_date = payload.end_date
 
     state.bLoading = true
-    api.async_call('getSalesInfo', '', {
+    api.async_call('getSalesInfoperMenu', '', {
       '{res_type}': res_type,
       // '{restaurant_id}': state.restaurant_id,
       '{start_date}': start_date,
@@ -252,8 +263,9 @@ const actions = {
           ]
         }
       }
-      commit('setSalesChartInfo', salesChart)
-      commit('setSalesInfo', salesArray)
+      console.log(JSON.stringify(salesArray))
+      commit('setMenuSalesChartInfo', salesChart)
+      commit('setMenuSalesInfo', salesArray)
       state.bLoading = false
     }).catch((error) => {
       console.log('error on sales API, ', error)

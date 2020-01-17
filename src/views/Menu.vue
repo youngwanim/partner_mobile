@@ -1,17 +1,17 @@
 <template>
-  <div class="home">
+  <div class="menuInfo">
     <!-- <img alt="Vue logo" src="../assets/logo.png"> -->
-    <Info></Info>
+    <menuInfo></menuInfo>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import Info from '@/components/menuInfo.vue'
+import menuInfo from '@/components/menuInfo.vue'
 export default {
-  name: 'home',
+  name: 'menu',
   components: {
-    Info
+    menuInfo
   }
 }
 </script>

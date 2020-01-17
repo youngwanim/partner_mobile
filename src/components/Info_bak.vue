@@ -1,5 +1,5 @@
 <template>
-  <div class="partner_info">
+  <div class="menu_info">
     <v-select class="ma-4"
           v-model="currentQuarter"
           :items="getQuarterList"
@@ -19,13 +19,35 @@
     <v-container fluid>
       <v-row justify="start">
         <v-col
-          v-for="(item, index) in getSalesInfo"
+          v-for="(item, index) in getMenuSalesInfo"
           v-bind:key="index"
           class="pt-0 pb-0"
       >
-    <v-card class="pa-1 ma-4"  min-height="200" min-width="300" max-width="330">
-      <v-card-title class="pb-1 subtitle-1 amber--text text--darken-3 font-weight-black">MENU {{index+1}}</v-card-title>
-      <v-card-title class="pt-1 pb-1 subtitle-2 font-weight-bold">{{item.menu_name}}</v-card-title>
+    <v-card class="pa-1"  min-height="200" min-width="300" max-width="360">
+      <!-- <v-list dense>
+         <template>
+           <v-list-item class="pl-3 amber--text text--darken-3 font-weight-bold">
+             <v-list-item-content>
+               <v-list-item-subtitle class="amber--text text--darken-3 font-weight-bold">{{item.menu_name}}</v-list-item-subtitle>
+             </v-list-item-content>
+             <v-list-item-action><v-btn depressed color="#b6ce28" class="font-weight-bold white--text">ON SALE</v-btn></v-list-item-action>
+           </v-list-item>
+         </template>
+       </v-list> -->
+       <v-container fluid>
+         <v-row justify="start">
+           <v-col
+             class="d-flex pt-0"
+             cols="12">
+         <v-row align="center">
+           <v-col class="amber--text text--darken-3 font-weight-bold pt-0 pb-0" cols="8">{{item.menu_name}} asdfsdfasdf</v-col>
+           <v-col cols="4"><v-btn depressed color="#b6ce28" class="font-weight-bold white--text">ON SALE</v-btn></v-col>
+         </v-row>
+       </v-col>
+         </v-row>
+       </v-container>
+      <v-card-title class="pb-1 subtitle-1 amber--text text--darken-3 font-weight-bold">{{item.menu_name}}</v-card-title>
+      <v-divider></v-divider>
       <v-card-text class="pb-5 font-weight-bold">
          <v-list dense>
             <template>
@@ -51,7 +73,7 @@
        <div v-if="item.panel.length > 0">
          <v-card-title class="pt-1 pb-0 subtitle-2 font-weight-black">SALES DETAIL</v-card-title>
          <v-divider class="mb-2"></v-divider>
-         <BarSalesCount :chartdata="getSalesChartInfo[item.menu_id]"></BarSalesCount>
+         <BarSalesCount :chartdata="getMenuSalesChartInfo[item.menu_id]"></BarSalesCount>
          <v-card-title class="pt-8 pb-0 subtitle-2 font-weight-black">PRODUCT INFO.</v-card-title>
          <v-divider></v-divider>
          <v-card-text class="pt-0">
@@ -256,7 +278,7 @@
       this.setFirstOrderDate('2018-10-10')
       this.createQuarterList()
       this.currentQuarter = this.getQuarterList[0]
-      this.GET_SALES_INFO({
+      this.GET_SALES_INFO_PER_MENU({
         res_type: 'month',
         start_date: this.currentQuarter.start_date,
         end_date: this.currentQuarter.end_date
@@ -268,8 +290,8 @@
     computed: {
       ...mapGetters('salesinfo', [
         'getLoading',
-        'getSalesInfo',
-        'getSalesChartInfo',
+        'getMenuSalesInfo',
+        'getMenuSalesChartInfo',
         'getRestaurantID',
         'getQuarterList',
         'getSelectedQuarterListIndex'
@@ -282,11 +304,11 @@
         'createQuarterList'
       ]),
       ...mapActions('salesinfo', [
-        'GET_SALES_INFO'
+        'GET_SALES_INFO_PER_MENU'
       ]),
       quarterSelect (value) {
         this.setSelectedQuarter(this.currentQuarter)
-        this.GET_SALES_INFO({
+        this.GET_SALES_INFO_PER_MENU({
           res_type: 'month',
           start_date: value.start_date,
           end_date: value.end_date
@@ -320,7 +342,7 @@
 </script>
 
 <style>
-  .partner_info {
+  .menu_info {
     text-align: left;
   }
   .small {
