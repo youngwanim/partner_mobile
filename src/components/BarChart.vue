@@ -1,7 +1,7 @@
 <template>
   <div >
   <v-card class="pa-4 ma-4">
-    <BarChart :chartData="datacollection"></BarChart>
+    <BarChart :chartdata="datacollection"></BarChart>
     <v-card-actions>
       <v-btn @click="fillData()">Randomize</v-btn>
     </v-card-actions>
@@ -10,7 +10,7 @@
 </template>
 
 <script>
-  import BarChart from './charts/Bar.js'
+  import BarChart from './charts/HorizontalBar.js'
 
   export default {
     components: {
@@ -21,25 +21,33 @@
         datacollection: null
       }
     },
-    mounted () {
+    created () {
       this.fillData()
+    },
+    mounted () {
     },
     methods: {
       fillData () {
         this.datacollection = {
-          labels: ['1', '2', '3','4','5','6','7'],
+          labels: ['JAN', 'FEB', 'MAR'],
           datasets: [
             {
               label: 'Data One',
               backgroundColor: '#007979',
+              barThickness: 10,
+              categoryPercentage: 1,
               data: [this.getRandomInt(), this.getRandomInt(), this.getRandomInt()]
             }, {
               label: 'Data two',
               backgroundColor: '#f87979',
+              barThickness: 10,
+              categoryPercentage: 0.1,
               data: [this.getRandomInt(), this.getRandomInt(), this.getRandomInt()]
             }, {
               label: 'Data three',
               backgroundColor: '#000079',
+              barThickness: 10,
+              categoryPercentage: 0.1,
               data: [this.getRandomInt(), this.getRandomInt(), this.getRandomInt()]
             }
           ]

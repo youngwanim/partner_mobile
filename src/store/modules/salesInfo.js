@@ -37,6 +37,31 @@ function getQuarter(month) {
   return quarter
 }
 
+function createLabelwithYear (year) {
+  let yearTemplate = {
+      label: '%{year}',
+      start_date: '%{year}-01-01',
+      end_date: '%{year}-12-31',
+      chart_label: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT','NOV','DEC']
+  }
+
+  let retObj = {}
+  //retObj.label = retObj.label.replace('%{yearl}', leftYear.toString())
+  for (let key in yearTemplate) {
+    if (yearTemplate[key].constructor === Array){
+      let arr = yearTemplate[key]
+      for (let i=0;i<arr.length;i++){
+        arr[i] = arr[i].replace('%{year}', year)
+      }
+      retObj[key] = arr
+    } else{
+      retObj[key] = yearTemplate[key].replace('%{year}', year)
+    }
+  }
+  return retObj
+
+}
+
 function createLabelwithQuarter (year, quarter) {
   let leftYear = year, rightYear = year
   if (quarter === 0) {
@@ -52,7 +77,8 @@ function createLabelwithQuarter (year, quarter) {
       end_date: '%{yearr}-01-31',
       chart_label1: '%{yearl}.11',
       chart_label2: '%{yearl}.12',
-      chart_label3: '%{yearr}.01'
+      chart_label3: '%{yearr}.01',
+      chart_label: ['%{yearl}.11', '%{yearl}.12', '%{yearr}.01']
     },
     {
       label: '%{yearl}.02 ~ %{yearr}.04',
@@ -60,7 +86,8 @@ function createLabelwithQuarter (year, quarter) {
       end_date: '%{yearr}-04-30',
       chart_label1: '%{yearl}.02',
       chart_label2: '%{yearl}.03',
-      chart_label3: '%{yearl}.04'
+      chart_label3: '%{yearl}.04',
+      chart_label: ['%{yearl}.02', '%{yearl}.03', '%{yearl}.04']
     },
     {
       label: '%{yearl}.05 ~ %{yearr}.07',
@@ -68,7 +95,8 @@ function createLabelwithQuarter (year, quarter) {
       end_date: '%{yearr}-07-31',
       chart_label1: '%{yearl}.05',
       chart_label2: '%{yearl}.06',
-      chart_label3: '%{yearl}.07'
+      chart_label3: '%{yearl}.07',
+      chart_label: ['%{yearl}.05', '%{yearl}.06', '%{yearl}.07']
     },
     {
       label: '%{yearl}.08 ~ %{yearr}.10',
@@ -76,15 +104,25 @@ function createLabelwithQuarter (year, quarter) {
       end_date: '%{yearr}-10-31',
       chart_label1: '%{yearl}.08',
       chart_label2: '%{yearl}.09',
-      chart_label3: '%{yearl}.10'
+      chart_label3: '%{yearl}.10',
+      chart_label: ['%{yearl}.08', '%{yearl}.09', '%{yearl}.10']
     }
   ]
   let retObj = {}
   //retObj.label = retObj.label.replace('%{yearl}', leftYear.toString())
   for (let key in quarterTemplate[quarter]) {
-    retObj[key] = quarterTemplate[quarter][key]
-      .replace('%{yearl}', leftYear)
-      .replace('%{yearr}', rightYear)
+    if (quarterTemplate[quarter][key].constructor === Array){
+      let arr = quarterTemplate[quarter][key]
+      for (let i=0;i<arr.length;i++){
+        arr[i] = arr[i].replace('%{yearl}', leftYear)
+        .replace('%{yearr}', rightYear)
+      }
+      retObj[key] = arr
+    } else{
+      retObj[key] = quarterTemplate[quarter][key]
+        .replace('%{yearl}', leftYear)
+        .replace('%{yearr}', rightYear)
+    }
   }
   return retObj
 }
@@ -94,12 +132,14 @@ const state = {
   bLoading: false,
   restaurant_id: 12,
   quarterList: [],
+  selectedQuarter: {},
+  yearList: [],
+  selectedYear: {},
   salesInfo: null,
   salesChartInfo: {},
   menuSalesInfo: null,
   menuSalesChartInfo: {},
-  firstOrderDate: '',
-  selectedQuarter: {}
+  firstOrderDate: ''
 }
 
 const getters = {
@@ -110,7 +150,9 @@ const getters = {
   getMenuSalesChartInfo: state => state.menuSalesChartInfo,
   getRestaurantID: state => state.restaurant_id,
   getQuarterList: state => state.quarterList,
-  getSelectedQuarter: state => state.selectedQuarter
+  getSelectedQuarter: state => state.selectedQuarter,
+  getYearList: state => state.yearList,
+  getSelectedYear: state => state.selectedYear
 }
 
 const mutations = {
@@ -126,6 +168,9 @@ const mutations = {
   setSelectedQuarter(state, payload) {
     state.selectedQuarter = payload
   },
+  setSelectedYear(state, payload) {
+    state.selectedYear = payload
+  },
   setSalesInfo(state, payload) {
     state.salesInfo = payload
   },
@@ -137,6 +182,25 @@ const mutations = {
   },
   setMenuSalesChartInfo(state, payload) {
     state.menuSalesChartInfo = payload
+  },
+  createYearList(state) {
+    let d = new Date()
+    let startYear = d.getFullYear()
+    let firstOrderDateObj = new Date(state.firstOrderDate)
+    let endYear = firstOrderDateObj.getFullYear()
+    state.yearList = []
+    state.selectedYear = startYear
+
+    do {
+      state.yearList.push(createLabelwithYear(startYear))
+      if (startYear === endYear) {
+        break
+      } else {
+        startYear -= 1
+      }
+    } while (!(startYear === endYear))
+    console.log('mutation/createYearList: ', JSON.stringify(state.yearList))
+    state.selectedYear = state.yearList[0]
   },
   createQuarterList(state) {
     let d = new Date()
@@ -248,22 +312,24 @@ const actions = {
         ) / Math.pow(10,2)
         salesArray.push(item)
         salesChart[key] = {
-          labels : [
-            state.selectedQuarter.chart_label1,
-            state.selectedQuarter.chart_label2,
-            state.selectedQuarter.chart_label3,
-          ],
+          labels : state.selectedYear.chart_label,
+          // [
+            // state.selectedQuarter.chart_label1,
+            // state.selectedQuarter.chart_label2,
+            // state.selectedQuarter.chart_label3,
+          // ],
           datasets : [
             {
               label: 'MENU ' + menu_index,
               backgroundColor: '#ffb700',
-              barThickness: 30,
+              barThickness: 20,
               data: item.label
             }
           ]
         }
       }
-      console.log(JSON.stringify(salesArray))
+      console.log('salesChart: ', JSON.stringify(salesChart))
+      console.log('state.selectedYear.chart_label: ', JSON.stringify(state.selectedYear.chart_label))
       commit('setMenuSalesChartInfo', salesChart)
       commit('setMenuSalesInfo', salesArray)
       state.bLoading = false

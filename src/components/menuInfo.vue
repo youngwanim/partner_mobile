@@ -61,8 +61,13 @@
        </v-card-text>
        <div v-if="item.panel.length > 0">
          <v-card-title class="pt-1 pb-0 subtitle-2 font-weight-black">SALES DETAIL</v-card-title>
-         <v-divider class="mb-2"></v-divider>
-         <BarSalesCount :chartdata="getMenuSalesChartInfo[item.menu_id]"></BarSalesCount>
+         <v-divider class="mt-2 mb-4"></v-divider>
+         <v-row justify="center">
+           <v-btn text small :disabled="leftTransitionDisable"><v-icon color="darken-2">mdi-chevron-left</v-icon></v-btn>
+            <span>{{getSelectedYear.label}}</span>
+           <v-btn text small :disabled="rightTransitionDisable"><v-icon color="darken-2">mdi-chevron-right</v-icon></v-btn>
+         </v-row>
+         <BarSalesCount :width="300" :height="500" :chartdata="getMenuSalesChartInfo[item.menu_id]"></BarSalesCount>
          <v-card-title class="pt-8 pb-0 subtitle-2 font-weight-black">PRODUCT INFO.</v-card-title>
          <v-divider></v-divider>
          <v-card-text class="pt-0">
@@ -111,7 +116,7 @@
 </template>
 
 <script>
-  import BarSalesCount from './charts/Bar.js'
+  import BarSalesCount from './charts/HorizontalBar.js'
   import {mapGetters, mapMutations, mapActions} from 'vuex'
   export default {
     components: {
@@ -122,6 +127,7 @@
         bLoading: true,
         panel: [],
         currentQuarter: null,
+        currentYear: null,
         datacollection: {
           labels: ['2019.10', '2019.11', '2019.12'],
           datasets: [
@@ -140,6 +146,8 @@
             }
           ]
         },
+        leftTransitionDisable: false,
+        rightTransitionDisable: false,
         quarter: [
           {
             index: 0,
@@ -265,12 +273,13 @@
     },
     created () {
       this.setFirstOrderDate('2018-10-10')
-      this.createQuarterList()
-      this.currentQuarter = this.getQuarterList[0]
+      // this.createQuarterList()
+      this.createYearList()
+      this.currentYear = this.getYearList[0]
       this.GET_SALES_INFO_PER_MENU({
         res_type: 'month',
-        start_date: this.currentQuarter.start_date,
-        end_date: this.currentQuarter.end_date
+        start_date: this.currentYear.start_date,
+        end_date: this.currentYear.end_date
       })
     },
     mounted () {
@@ -283,14 +292,19 @@
         'getMenuSalesChartInfo',
         'getRestaurantID',
         'getQuarterList',
-        'getSelectedQuarterListIndex'
+        'getSelectedQuarterListIndex',
+        'getYearList',
+        'getSelectedYear',
+        'getSelectedYearListIndex'
       ]),
     },
     methods: {
       ...mapMutations('salesinfo', [
         'setSelectedQuarter',
+        'setSelectedYear',
         'setFirstOrderDate',
-        'createQuarterList'
+        'createQuarterList',
+        'createYearList'
       ]),
       ...mapActions('salesinfo', [
         'GET_SALES_INFO_PER_MENU'

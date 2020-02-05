@@ -48,7 +48,7 @@ export const store = new Vuex.Store({
         sessionStorage.setItem('openid', result.data.openid)
         VueCookies.set('openid', result.data.openid)
         VueCookies.set('token', result.data.token)
-        commit('setName', result.data.name)
+        commit('setName', result.data.info.name)
         commit('setAuthState', true)
         axios.defaults.headers.common['Authorization'] = `Bearer ${result.data.token}`
         router.push('/quarter')
@@ -65,7 +65,7 @@ export const store = new Vuex.Store({
       }
 
       return api.async_call('validation').then((result) => {
-        commit('setName', result.data.name)
+        commit('setName', result.data.info.name)
         commit('setAuthState', true)
         router.push('/quarter')
       }).catch(() => {
