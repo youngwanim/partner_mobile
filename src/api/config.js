@@ -17,9 +17,20 @@ start_date={start_date}&end_date={end_date}',
     method: 'get',
     headers: get_header_info
   },
+  getMenuSales: {
+    url: st_config.resApi_url + '/analdb/partners/menusales/{menu_id}?res_type={res_type}&\
+start_date={start_date}&end_date={end_date}',
+    method: 'get',
+    headers: get_header_info
+  },
   getSalesInfoperMenu: {
     url: st_config.resApi_url + '/analdb/partners/menusales?res_type={res_type}&\
 start_date={start_date}&end_date={end_date}',
+    method: 'get',
+    headers: get_header_info
+  },
+  getMenuInfo: {
+    url: st_config.resApi_url + '/analdb/partners/menus',
     method: 'get',
     headers: get_header_info
   }

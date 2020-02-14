@@ -1,6 +1,6 @@
 <template>
   <div class="menu_info">
-    <v-select class="ma-4"
+    <!-- <v-select class="ma-4"
           v-model="currentQuarter"
           :items="getQuarterList"
           item-text="label"
@@ -8,7 +8,7 @@
           return-object
           label="Select Quarter"
           outlined
-        ></v-select>
+        ></v-select> -->
     <div class="text-center" v-if="getLoading">
       <v-progress-circular
         indeterminate
@@ -19,9 +19,9 @@
     <v-container fluid>
       <v-row justify="start">
         <v-col
-          v-for="(item, index) in getMenuSalesInfo"
+          v-for="(item, key, index) in getMenuInfo"
           v-bind:key="index"
-          class="pt-0 pb-0"
+          class="pt-0 pb-4"
       >
     <v-card class="pa-1"  min-height="200" min-width="300" max-width="360">
        <v-container fluid>
@@ -30,8 +30,11 @@
              class="d-flex pt-0"
              cols="12">
              <v-row align="center">
-               <v-col class="amber--text text--darken-3 font-weight-bold pt-0 pb-0" cols="8">{{item.menu_name}} asdfsdfasdf</v-col>
-               <v-col cols="4"><v-btn depressed color="#b6ce28" class="font-weight-bold white--text">ON SALE</v-btn></v-col>
+               <v-col v-bind:class="{'amber--text text--darken-3':(item.sales_status === 1), 'grey--text':(item.sales_status !== 1)}" class="font-weight-bold pt-0 pb-0" cols="8">{{item.name}}</v-col>
+               <v-col cols="4">
+                 <v-btn depressed v-if="item.sales_status === 1" color="#b6ce28" class="font-weight-bold white--text">ON SALE</v-btn>
+                 <v-btn depressed v-else color="#b3b3b3" class="font-weight-bold white--text overline">SALES END</v-btn>
+               </v-col>
              </v-row>
            </v-col>
          </v-row>
@@ -41,20 +44,16 @@
          <v-list dense>
             <template>
               <v-list-item  class="pl-0 pr-0">
-                <v-list-item-content>Total sales revenue</v-list-item-content>
-                <v-list-item-content><p class="text-right mb-0">¥{{item.total_sales_revenue}}</p></v-list-item-content>
+                <v-list-item-content class="grey--text text--darken-1">Sales start date</v-list-item-content>
+                <v-list-item-content><p class="text-right mb-0 grey--text text--darken-1">{{item.start_date}}</p></v-list-item-content>
+              </v-list-item>
+              <v-list-item  class="pl-0 pr-0">
+                <v-list-item-content class="grey--text text--darken-1">Sales end date</v-list-item-content>
+                <v-list-item-content><p class="text-right mb-0 grey--text text--darken-1">{{item.end_date}}</p></v-list-item-content>
               </v-list-item>
               <v-list-item  class="pl-0 pr-0 grey--text">
-                <v-list-item-content class="grey--text text--darken-1">Price</v-list-item-content>
+                <v-list-item-content class="grey--text text--darken-1">Unit price</v-list-item-content>
                 <v-list-item-content><p class="text-right mb-0 grey--text text--darken-1">¥{{item.price}}</p></v-list-item-content>
-              </v-list-item>
-              <v-list-item  class="pl-0 pr-0">
-                <v-list-item-content class="grey--text text--darken-1">Total # of dishes sold</v-list-item-content>
-                <v-list-item-content><p class="text-right mb-0 grey--text text--darken-1">¥{{item.total_sales_count}} dish(es)</p></v-list-item-content>
-              </v-list-item>
-              <v-list-item  class="pl-0 pr-0">
-                <v-list-item-content class="grey--text text--darken-1">Promotional discount</v-list-item-content>
-                <v-list-item-content><p class="text-right mb-0 deep-orange--text text-accent-4">-¥{{item.promotion_discount}}</p></v-list-item-content>
               </v-list-item>
             </template>
           </v-list>
@@ -63,9 +62,9 @@
          <v-card-title class="pt-1 pb-0 subtitle-2 font-weight-black">SALES DETAIL</v-card-title>
          <v-divider class="mt-2 mb-4"></v-divider>
          <v-row justify="center">
-           <v-btn text small :disabled="leftTransitionDisable"><v-icon color="darken-2">mdi-chevron-left</v-icon></v-btn>
-            <span>{{getSelectedYear.label}}</span>
-           <v-btn text small :disabled="rightTransitionDisable"><v-icon color="darken-2">mdi-chevron-right</v-icon></v-btn>
+           <v-btn text small @click="changeTargetYear(item.menu_id, 1)" :disabled="leftTransitionDisable"><v-icon color="darken-2">mdi-chevron-left</v-icon></v-btn>
+            <span>{{selectedYear(item.date_index).label}}</span>
+           <v-btn text small @click="changeTargetYear(item.menu_id, -1)" :disabled="rightTransitionDisable"><v-icon color="darken-2">mdi-chevron-right</v-icon></v-btn>
          </v-row>
          <BarSalesCount :width="300" :height="500" :chartdata="getMenuSalesChartInfo[item.menu_id]"></BarSalesCount>
          <v-card-title class="pt-8 pb-0 subtitle-2 font-weight-black">PRODUCT INFO.</v-card-title>
@@ -94,7 +93,7 @@
   </v-col>
     </v-row>
   </v-container>
-    <v-card class="pa-1 ma-7" max-width="330">
+    <!-- <v-card class="pa-1 ma-7" max-width="330">
       <v-card-title class="pb-1 subtitle-1 amber--text text--darken-3 font-weight-black">SUMMARY</v-card-title>
       <v-card-text class="pb-1 font-weight-bold">
          <v-list dense>
@@ -110,7 +109,7 @@
             </template>
           </v-list>
        </v-card-text>
-    </v-card>
+    </v-card> -->
     </div>
   </div>
 </template>
@@ -146,8 +145,6 @@
             }
           ]
         },
-        leftTransitionDisable: false,
-        rightTransitionDisable: false,
         quarter: [
           {
             index: 0,
@@ -276,11 +273,12 @@
       // this.createQuarterList()
       this.createYearList()
       this.currentYear = this.getYearList[0]
-      this.GET_SALES_INFO_PER_MENU({
-        res_type: 'month',
-        start_date: this.currentYear.start_date,
-        end_date: this.currentYear.end_date
-      })
+      // this.GET_SALES_INFO_PER_MENU({
+      //   res_type: 'month',
+      //   start_date: this.currentYear.start_date,
+      //   end_date: this.currentYear.end_date
+      // })
+      this.GET_MENU_INFO()
     },
     mounted () {
       this.fillData()
@@ -288,26 +286,41 @@
     computed: {
       ...mapGetters('salesinfo', [
         'getLoading',
+        'getMenuInfo',
         'getMenuSalesInfo',
         'getMenuSalesChartInfo',
         'getRestaurantID',
         'getQuarterList',
         'getSelectedQuarterListIndex',
         'getYearList',
-        'getSelectedYear',
-        'getSelectedYearListIndex'
+        'getSelectedYearIndex'
       ]),
+      leftTransitionDisable() {
+        if(this.getSelectedYearIndex === this.getYearList.length - 1){
+          return true
+        }
+        return false
+      },
+      rightTransitionDisable() {
+        if(this.getSelectedYearIndex === 0){
+          return true
+        }
+        return false
+      }
     },
     methods: {
       ...mapMutations('salesinfo', [
         'setSelectedQuarter',
-        'setSelectedYear',
+        'setSelectedYearIndex',
+        'setSelectYearIndexForMenu',
         'setFirstOrderDate',
         'createQuarterList',
         'createYearList'
       ]),
       ...mapActions('salesinfo', [
-        'GET_SALES_INFO_PER_MENU'
+        'GET_MENU_INFO',
+        'GET_SALES_INFO_PER_MENU',
+        'GET_SINGLE_MENU_SALES_INFO'
       ]),
       quarterSelect (value) {
         this.setSelectedQuarter(this.currentQuarter)
@@ -315,6 +328,27 @@
           res_type: 'month',
           start_date: value.start_date,
           end_date: value.end_date
+        })
+      },
+      selectedYear(date_index) {
+        return this.getYearList[date_index]
+      },
+      changeTargetYear (menu_id, num) {
+        let targetYearIndex = this.getSelectedYearIndex + num
+
+        if (targetYearIndex < 0) {
+          targetYearIndex = 0
+        }
+        if (targetYearIndex >= this.getYearList.length -1){
+          targetYearIndex = this.getYearList.length - 1
+        }
+        // this.setSelectedYearIndex(targetYearIndex)
+        this.GET_SINGLE_MENU_SALES_INFO({
+          'res_type': 'month',
+          'menu_id': menu_id,
+          'date_index': targetYearIndex,
+          'start_date': this.getYearList[this.getSelectedYearIndex].start_date,
+          'end_date': this.getYearList[this.getSelectedYearIndex].end_date
         })
       },
       detailTitle (panel) {

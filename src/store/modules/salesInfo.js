@@ -2,8 +2,10 @@ import router from '@/router'
 import api from '@/api/api.js'
 
 const type = {
+  GET_MENU_INFO: 'GET_MENU_INFO',
   GET_SALES_INFO: 'GET_SALES_INFO',
-  GET_SALES_INFO_PER_MENU: 'GET_SALES_INFO_PER_MENU'
+  GET_SALES_INFO_PER_MENU: 'GET_SALES_INFO_PER_MENU',
+  GET_SINGLE_MENU_SALES_INFO: 'GET_SINGLE_MENU_SALES_INFO'
 }
 
 const quarterRef = [
@@ -134,9 +136,10 @@ const state = {
   quarterList: [],
   selectedQuarter: {},
   yearList: [],
-  selectedYear: {},
+  selectedYearIndex: 0,
   salesInfo: null,
   salesChartInfo: {},
+  menuInfo: [],
   menuSalesInfo: null,
   menuSalesChartInfo: {},
   firstOrderDate: ''
@@ -146,13 +149,14 @@ const getters = {
   getLoading: state => state.bLoading,
   getSalesInfo: state => state.salesInfo,
   getSalesChartInfo: state => state.salesChartInfo,
+  getMenuInfo: state => state.menuInfo,
   getMenuSalesInfo: state => state.menuSalesInfo,
   getMenuSalesChartInfo: state => state.menuSalesChartInfo,
   getRestaurantID: state => state.restaurant_id,
   getQuarterList: state => state.quarterList,
   getSelectedQuarter: state => state.selectedQuarter,
   getYearList: state => state.yearList,
-  getSelectedYear: state => state.selectedYear
+  getSelectedYearIndex: state => state.selectedYearIndex
 }
 
 const mutations = {
@@ -168,8 +172,11 @@ const mutations = {
   setSelectedQuarter(state, payload) {
     state.selectedQuarter = payload
   },
-  setSelectedYear(state, payload) {
-    state.selectedYear = payload
+  setSelectedYearIndex(state, payload) {
+    state.selectedYearIndex = payload
+  },
+  setMenuInfo(state, payload) {
+    state.menuInfo = payload
   },
   setSalesInfo(state, payload) {
     state.salesInfo = payload
@@ -189,7 +196,6 @@ const mutations = {
     let firstOrderDateObj = new Date(state.firstOrderDate)
     let endYear = firstOrderDateObj.getFullYear()
     state.yearList = []
-    state.selectedYear = startYear
 
     do {
       state.yearList.push(createLabelwithYear(startYear))
@@ -200,7 +206,16 @@ const mutations = {
       }
     } while (!(startYear === endYear))
     console.log('mutation/createYearList: ', JSON.stringify(state.yearList))
-    state.selectedYear = state.yearList[0]
+    state.selectedYearIndex = 0
+  },
+  setSelectYearIndexForMenu(state, payload) {
+    let targetMenuID = payload.menu_id,
+        dateIndex = payload.date_index
+
+    let targetObjIndex = state.menuSalesInfo.findIndex((element) => element.menu_id === targetMenuID)
+    if(targetObjIndex > -1) {
+      state.menuSalesInfo[targetObjIndex].date_index = dateIndex
+    }
   },
   createQuarterList(state) {
     let d = new Date()
@@ -233,6 +248,31 @@ const mutations = {
 }
 
 const actions = {
+  [type.GET_MENU_INFO]({commit, state}) {
+    state.bLoading = true
+    api.async_call('getMenuInfo', '', null).then((result) =>
+    {
+      for (var obj in result.data.data) {
+        let targetObj = result.data.data[obj]
+        console.log('res_end_data: ', targetObj.end_date)
+        result.data.data[obj]['panel'] = []
+        let end_date = new Date(targetObj.end_date)
+        let today = new Date()
+        console.log('obj','end_date/today: ',obj, end_date, today)
+        if (end_date > today && targetObj.sales_status === 1 ) {
+          targetObj.end_date = '-'
+        }
+      }
+      commit('setMenuInfo', result.data.data)
+      state.bLoading = false
+    }).catch((error) => {
+      console.log('error on sales API, ', error)
+      state.loginFail = true
+      state.bLoading = false
+      commit('setAuthState', false)
+      router.push('/')
+    })
+  },
   [type.GET_SALES_INFO]({commit, state}, payload) {
     let res_type = payload.res_type
     let start_date = payload.start_date
@@ -304,6 +344,7 @@ const actions = {
         let item = result.data.data[key]
         menu_index += 1
         item['panel'] = []
+        item['date_index'] = 0
         item['total_sales_revenue'] = Math.round(
           item['total_sales_revenue'] * Math.pow(10,2)
         ) / Math.pow(10,2)
@@ -312,12 +353,7 @@ const actions = {
         ) / Math.pow(10,2)
         salesArray.push(item)
         salesChart[key] = {
-          labels : state.selectedYear.chart_label,
-          // [
-            // state.selectedQuarter.chart_label1,
-            // state.selectedQuarter.chart_label2,
-            // state.selectedQuarter.chart_label3,
-          // ],
+          labels : state.yearList[state.selectedYearIndex].chart_label,
           datasets : [
             {
               label: 'MENU ' + menu_index,
@@ -329,7 +365,62 @@ const actions = {
         }
       }
       console.log('salesChart: ', JSON.stringify(salesChart))
-      console.log('state.selectedYear.chart_label: ', JSON.stringify(state.selectedYear.chart_label))
+      console.log('state.createYearList.chart_label: ', JSON.stringify(state.yearList[state.selectedYearIndex].chart_label))
+      commit('setMenuSalesChartInfo', salesChart)
+      commit('setMenuSalesInfo', salesArray)
+      state.bLoading = false
+    }).catch((error) => {
+      console.log('error on sales API, ', error)
+      state.loginFail = true
+      state.bLoading = false
+      commit('setAuthState', false)
+      router.push('/')
+    })
+  },
+  [type.GET_SINGLE_MENU_SALES_INFO]({commit, state}, payload) {
+    let res_type = payload.res_type
+    let date_index = payload.date_index
+    let start_date = payload.start_date
+    let end_date = payload.end_date
+    let menu_id = payload.menu_id
+
+    state.bLoading = true
+    api.async_call('getMenuSales', '', {
+      '{menu_id}': menu_id,
+      '{res_type}': res_type,
+      '{start_date}': start_date,
+      '{end_date}': end_date
+    }).then((result) => {
+      //returned data is not array. transform the data into array
+      let salesArray = []
+      let salesChart = {}
+      let menu_index = 0
+      for (let key in result.data.data) {
+        let item = result.data.data[key]
+        menu_index += 1
+        item['panel'] = []
+        item['date_index'] = date_index
+        item['total_sales_revenue'] = Math.round(
+          item['total_sales_revenue'] * Math.pow(10,2)
+        ) / Math.pow(10,2)
+        item['promotion_discount'] = Math.round(
+          item['promotion_discount'] * Math.pow(10,2)
+        ) / Math.pow(10,2)
+        salesArray.push(item)
+        salesChart[key] = {
+          labels : state.yearList[state.selectedYearIndex].chart_label,
+          datasets : [
+            {
+              label: 'MENU ' + menu_index,
+              backgroundColor: '#ffb700',
+              barThickness: 20,
+              data: item.label
+            }
+          ]
+        }
+      }
+      console.log('salesChart: ', JSON.stringify(salesChart))
+      console.log('state.createYearList.chart_label: ', JSON.stringify(state.yearList[state.selectedYearIndex].chart_label))
       commit('setMenuSalesChartInfo', salesChart)
       commit('setMenuSalesInfo', salesArray)
       state.bLoading = false

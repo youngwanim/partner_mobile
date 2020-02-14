@@ -9,7 +9,7 @@
 // @ is an alias to /src
 import menuInfo from '@/components/menuInfo.vue'
 export default {
-  name: 'menu',
+  name: 'menuinfo',
   components: {
     menuInfo
   }
