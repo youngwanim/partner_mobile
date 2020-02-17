@@ -6,7 +6,7 @@
           <v-row align="center" justify="center">
             <v-img
               src="/img_main_eng.jpg"
-              class="grey lighten-2 mt-12 ml-12 mr-12"
+              class="mt-12 ml-12 mr-12"
               max-width="200"
             ></v-img>
           </v-row>

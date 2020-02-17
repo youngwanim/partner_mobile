@@ -58,16 +58,16 @@
             </template>
           </v-list>
        </v-card-text>
-       <div v-if="item.panel.length > 0">
+       <div v-if="item.panel.length > 0 && getMenuSalesInfo !== null && (key in getMenuSalesInfo)">
          <v-card-title class="pt-1 pb-0 subtitle-2 font-weight-black">SALES DETAIL</v-card-title>
          <v-divider class="mt-2 mb-4"></v-divider>
          <v-row justify="center">
-           <v-btn text small @click="changeTargetYear(item.menu_id, 1)" :disabled="leftTransitionDisable"><v-icon color="darken-2">mdi-chevron-left</v-icon></v-btn>
-            <span>{{selectedYear(item.date_index).label}}</span>
-           <v-btn text small @click="changeTargetYear(item.menu_id, -1)" :disabled="rightTransitionDisable"><v-icon color="darken-2">mdi-chevron-right</v-icon></v-btn>
+           <v-btn text small @click="changeTargetYear(key, 1)" :disabled="leftTransitionDisable"><v-icon color="darken-2">mdi-chevron-left</v-icon></v-btn>
+            <span>{{selectedYear(getMenuSalesInfo[key].date_index).label}}</span>
+           <v-btn text small @click="changeTargetYear(key, -1)" :disabled="rightTransitionDisable"><v-icon color="darken-2">mdi-chevron-right</v-icon></v-btn>
          </v-row>
-         <BarSalesCount :width="300" :height="500" :chartdata="getMenuSalesChartInfo[item.menu_id]"></BarSalesCount>
-         <v-card-title class="pt-8 pb-0 subtitle-2 font-weight-black">PRODUCT INFO.</v-card-title>
+         <BarSalesCount :width="300" :height="500" :chartdata="getMenuSalesChartInfo[key]"></BarSalesCount>
+         <!-- <v-card-title class="pt-8 pb-0 subtitle-2 font-weight-black">PRODUCT INFO.</v-card-title>
          <v-divider></v-divider>
          <v-card-text class="pt-0">
             <v-list dense>
@@ -82,11 +82,35 @@
                  </v-list-item>
                </template>
              </v-list>
-          </v-card-text>
+          </v-card-text> -->
+          <v-card-text class="pt-0 pb-5 font-weight-bold">
+             <v-list dense>
+                <template>
+                  <v-list-item  class="pl-0 pr-0">
+                    <v-list-item-content class="grey--text text--darken-1">Total # of dishes sold</v-list-item-content>
+                    <v-list-item-content><p class="text-right mb-0 grey--text text--darken-1">{{getMenuSalesInfo[key].total_sales_count}}</p></v-list-item-content>
+                  </v-list-item>
+                  <v-list-item  class="pl-0 pr-0">
+                    <v-list-item-content class="grey--text text--darken-1">Promotional discount</v-list-item-content>
+                    <v-list-item-content><p class="text-right mb-0 grey--text text--darken-1">{{getMenuSalesInfo[key].promotion_discount}}</p></v-list-item-content>
+                  </v-list-item>
+                  <v-list-item  class="pl-0 pr-0 grey--text">
+                    <v-list-item-content class="grey--text text--darken-1">Total sales revenue</v-list-item-content>
+                    <v-list-item-content><p class="text-right mb-0 grey--text text--darken-1">¥{{getMenuSalesInfo[key].total_sales_revenue}}</p></v-list-item-content>
+                  </v-list-item>
+                </template>
+              </v-list>
+           </v-card-text>
         </div>
         <v-expansion-panels v-model="item.panel" multiple>
-          <v-expansion-panel>
-            <v-expansion-panel-header class="orange--text font-weight-bold">{{detailTitle(item.panel)}}</v-expansion-panel-header>
+          <v-expansion-panel @click="loadMenuSalesInfo(key)" >
+            <v-expansion-panel-header class="orange--text font-weight-bold">{{detailTitle(item.panel)}}
+              <v-progress-circular
+                indeterminate
+                color="amber"
+                v-if="getLoadingMenuSales"
+              ></v-progress-circular>
+            </v-expansion-panel-header>
           </v-expansion-panel>
         </v-expansion-panels>
     </v-card>
@@ -286,6 +310,7 @@
     computed: {
       ...mapGetters('salesinfo', [
         'getLoading',
+        'getLoadingMenuSales',
         'getMenuInfo',
         'getMenuSalesInfo',
         'getMenuSalesChartInfo',
@@ -331,7 +356,23 @@
         })
       },
       selectedYear(date_index) {
+        console.log('selectedYear: ', JSON.stringify(this.getYearList), date_index)
         return this.getYearList[date_index]
+      },
+      loadMenuSalesInfo (menu_id) {
+        console.log('clicked_menu id@387/menuinfo: ', menu_id)
+        if (!(menu_id in this.getMenuSalesInfo)) {
+          this.GET_SINGLE_MENU_SALES_INFO({
+            'res_type': 'month',
+            'menu_id': menu_id,
+            'date_index': 0,
+            // 'start_date': this.getYearList[this.getSelectedYearIndex].start_date,
+            // 'end_date': this.getYearList[this.getSelectedYearIndex].end_date
+            'start_date': this.getMenuInfo[menu_id].start_date,
+            'end_date': this.getMenuInfo[menu_id].end_date
+
+          })
+        }
       },
       changeTargetYear (menu_id, num) {
         let targetYearIndex = this.getSelectedYearIndex + num
