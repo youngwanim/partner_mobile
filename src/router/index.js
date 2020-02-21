@@ -4,7 +4,8 @@ import Home from '../views/Home.vue'
 import Quarter from '../views/Quarter.vue'
 import MenuInfo from '../views/Menu.vue'
 import Login from '../views/Login.vue'
-import BarSample from '../views/BarSample.vue'
+import DoughnutSample from '../views/DoughnutSample.vue'
+//import BarSample from '../views/BarSample.vue'
 //import HomeTest from '../views/Home_test.vue'
 Vue.use(VueRouter)
 
@@ -36,8 +37,8 @@ const routes = [
   },
   {
     path: '/sample',
-    name: 'BarSample',
-    component: BarSample
+    name: 'DoughnutSample',
+    component: DoughnutSample
   }
 ]
 

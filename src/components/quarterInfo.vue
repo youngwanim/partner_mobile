@@ -209,8 +209,8 @@
       }
     },
     created () {
-      this.setFirstOrderDate('2018-10-10')
-      this.createQuarterList()
+      this.setFirstOrderDate()
+      this.createQuarterList({'start_date':'2018-10-10', 'end_date':null})
       this.currentQuarter = this.getQuarterList[0]
       this.GET_SALES_INFO({
         res_type: 'month',

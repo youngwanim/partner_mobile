@@ -29,7 +29,7 @@ export default {
             gridLines: {
               display: false
             },
-            stacked: true
+            stacked: false
           }]
         },
         legend: {
@@ -57,8 +57,8 @@ export default {
             }
         },
         responsive: true,
-        maintainAspectRatio: true,
-        aspectRatio: 1
+        maintainAspectRatio: false
+//        aspectRatio: 1
       }
     }
   },
@@ -74,7 +74,6 @@ export default {
       maxSuggested -= maxSuggested%10
     }
     this.options.scales.yAxes[0].ticks.suggestedMax = maxSuggested
-    console.log('maxValue from data: ', maxValue, maxSuggested)
     console.log('chartdata: ', JSON.stringify(this.chartdata))
     // this.chartData is created in the mixin.
     // If you want to pass options please create a local options object
@@ -82,5 +81,33 @@ export default {
     Chart.plugins.register(ChartJsPluginDataLabels);
 
     this.renderChart(this.chartdata, this.options)
+  },
+  methods: {
+    renderTheChart() {
+      let maxSuggested = 10
+      let maxValue = 0
+      if (this.chartdata){
+        maxValue = Math.max(...this.chartdata.datasets[0].data)
+      }
+
+      if (maxValue > 0) {
+        maxSuggested = Math.ceil(maxValue * 5 / 4)
+        maxSuggested -= maxSuggested%10
+      }
+      this.options.scales.yAxes[0].ticks.suggestedMax = maxSuggested
+      console.log('chartdata: ', JSON.stringify(this.chartdata))
+      // this.chartData is created in the mixin.
+      // If you want to pass options please create a local options object
+      //Chart.defaults.global.plugins.datalabels.display = false;
+      Chart.plugins.register(ChartJsPluginDataLabels);
+
+      this.renderChart(this.chartdata, this.options)
+    }
+  },
+  watch: {
+    chartdata: function (){
+      //this._chart.destroy()
+      this.renderTheChart()
+    }
   }
 }
