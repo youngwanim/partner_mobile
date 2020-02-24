@@ -232,7 +232,6 @@
     },
     created () {
       this.setFirstOrderDate('2018-10-10')
-      this.createYearList()
       this.currentYear = this.getYearList[0]
       this.GET_MENU_INFO()
     },
@@ -260,8 +259,7 @@
     methods: {
       ...mapMutations('salesinfo', [
         'setSelectYearIndexForMenu',
-        'setFirstOrderDate',
-        'createYearList'
+        'setFirstOrderDate'
       ]),
       ...mapActions('salesinfo', [
         'GET_MENU_INFO',

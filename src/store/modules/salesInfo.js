@@ -23,6 +23,10 @@ const state = {
   menuInfo: [],
   menuSalesInfo: {},
   menuSalesChartInfo: {},
+  monthSalesInfo: {
+    date_label: '2019-11',
+    
+  },
   firstOrderDate: ''
 }
 
@@ -131,7 +135,7 @@ const actions = {
       console.log('error on sales API, ', error)
       state.loginFail = true
       state.bLoading = false
-      commit('setAuthState', false)
+      commit('setAuthState', false, {root:true})
       router.push('/')
     })
   },
@@ -182,7 +186,7 @@ const actions = {
       console.log('error on sales API, ', error)
       state.loginFail = true
       state.bLoading = false
-      commit('setAuthState', false)
+      commit('setAuthState', false, {root:true})
       router.push('/')
     })
   },
@@ -235,7 +239,7 @@ const actions = {
       console.log('error on sales API, ', error)
       state.loginFail = true
       state.bLoading = false
-      commit('setAuthState', false)
+      commit('setAuthState', false, {root:true})
       router.push('/')
     })
   },
@@ -295,7 +299,7 @@ const actions = {
       console.log('error on sales API, ', error)
       state.loginFail = true
       state.menuInfo[menu_id].bLoadingMenuSales = false
-      commit('setAuthState', false)
+      commit('setAuthState', false, {root:true})
       router.push('/')
     })
   }

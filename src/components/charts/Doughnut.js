@@ -51,18 +51,23 @@ export default {
                         font: {
                             weight: 'bold'
                         },
-                        color: '#ff8400'
+                        color: '#ffffff'
                     }
                 }
             }
         },
         responsive: true,
         maintainAspectRatio: false,
+        cutoutPercentage: 60,
         elements: {
           center: {
-            text: ['0000','dishes'],
+            text: ['0001','dishes'],
             color: ['#333333', '#333333'], //Default black
-            fontStyle: ['700 20px DNIPro','100 15px DNIPro'], //Default Arial
+            fontSize: [20, 15],
+            fontWeight: [700, 100],
+            //fontStyle: ['700 20px DNIPro','100 15px DNIPro'], //Default Arial
+            fontStyle: ['DNIPro','DNIPro'], //Default Arial
+            linePadding: 5,
             sidePadding: 15 //Default 20 (as a percentage)
           }
         }
@@ -72,50 +77,22 @@ export default {
   },
   mounted () {
     this.renderTheChart()
-    // let maxSuggested = 10
-    // let maxValue = 0
-    // if (this.chartdata){
-    //   maxValue = Math.max(...this.chartdata.datasets[0].data)
-    // }
-    //
-    // if (maxValue > 0) {
-    //   maxSuggested = Math.ceil(maxValue * 5 / 4)
-    //   maxSuggested -= maxSuggested%10
-    // }
-    // this.options.scales.yAxes[0].ticks.suggestedMax = maxSuggested
-    // console.log('chartdata: ', JSON.stringify(this.chartdata))
-    // this.chartData is created in the mixin.
-    // If you want to pass options please create a local options object
-    //Chart.defaults.global.plugins.datalabels.display = false;
-    // Chart.plugins.register(ChartJsPluginDataLabels);
-    //
-    // this.renderChart(this.chartdata, this.options)
   },
   methods: {
     renderTheChart() {
-      // let maxSuggested = 10
-      // let maxValue = 0
-      // if (this.chartdata){
-      //   maxValue = Math.max(...this.chartdata.datasets[0].data)
-      // }
-      //
-      // if (maxValue > 0) {
-      //   maxSuggested = Math.ceil(maxValue * 5 / 4)
-      //   maxSuggested -= maxSuggested%10
-      // }
-      // this.options.scales.yAxes[0].ticks.suggestedMax = maxSuggested
-      // console.log('chartdata: ', JSON.stringify(this.chartdata))
-      // this.chartData is created in the mixin.
-      // If you want to pass options please create a local options object
-      //Chart.defaults.global.plugins.datalabels.display = false;
+      //change options datalabels if data is null
+      console.log('chartdata: ',this.chartdata.datasets)
+      if (this.chartdata.datasets[0].data.length === 0) {
+        this.chartdata.datasets[0].data.push(-1)
+        this.options.plugins.datalabels.labels.title.color = '#ffffff'
+      } else{
+        this.options.plugins.datalabels.labels.title.color = '#000000'
+      }
       Chart.plugins.register(ChartJsPluginDataLabels);
       Chart.plugins.register({
         beforeDraw: function (chart) {
           if (chart.config.options.elements.center) {
-            //Get ctx from string
-            var lineheight = 10;
             var ctx = chart.chart.ctx;
-
             //Get options from the center object in options
             var centerConfig = chart.config.options.elements.center;
             //var fontStyle = centerConfig.fontStyle || 'Arial';
@@ -123,11 +100,16 @@ export default {
             var txt = centerConfig.text;
             //var color = centerConfig.color || '#000';
             var color = centerConfig.color;
+            var fontSize = centerConfig.fontSize;
+            var fontWeight = centerConfig.fontWeight;
+            var linePadding = centerConfig.linePadding;
             var sidePadding = centerConfig.sidePadding || 20;
             var sidePaddingCalculated = (sidePadding/100) * (chart.innerRadius * 2)
             //Start with a base font of 30px
             var lines = chart.config.options.elements.center.text.length
-
+            var totalHeight = fontSize.reduce(function(sum, item){sum += item; return sum}, 0) + ((lines-1)*linePadding)
+            var fontYPos = ((chart.chartArea.top + chart.chartArea.bottom) / 2) - (totalHeight/2);
+            console.log('totalHeight: ', totalHeight)
             for (let i=0;i<lines;i++) {
               ctx.font = "40px " + fontStyle[i];
               var stringWidth = ctx.measureText(txt[i]).width;
@@ -138,46 +120,24 @@ export default {
               var fontSizeToUse = Math.min(newFontSize, elementHeight);
               console.log('fontsize: ',i , newFontSize, elementHeight, fontSizeToUse)
               console.log('fontstyle: ', i, fontStyle[i])
-              lineheight = fontSizeToUse = 15
+              //lineheight = fontSizeToUse = 15
               ctx.textAlign = 'center';
-              ctx.textBaseline = 'middle';
+              //ctx.textBaseline = 'middle';
+              ctx.textBaseline = 'bottom';
               var centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
               var centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
               //ctx.font = fontSizeToUse+"px " + fontStyle[i];
-              ctx.font = fontStyle[i];
-              console.log('font: ', i, ctx.font)
+              ctx.font = fontWeight[i] + ' ' + fontSize[i]+'px '+fontStyle[i];
+              fontYPos += fontSize[i]
+              console.log('font: ', i, ctx.font, centerY, fontYPos)
               ctx.fillStyle = color[i];
-              ctx.fillText(txt[i], centerX, centerY-(lines*lineheight/2) + (lineheight*i) + (lineheight / 2) );
+
+              ctx.fillText(txt[i], centerX, fontYPos);
+              fontYPos += linePadding
             }
-
-
-            //Get the width of the string and also the width of the element minus 10 to give it 5px side padding
-            // var stringWidth = ctx.measureText(txt).width;
-            // var elementWidth = (chart.innerRadius * 2) - sidePaddingCalculated;
-
-            // Find out how much the font can grow in width.
-            // var widthRatio = elementWidth / stringWidth;
-            // var newFontSize = Math.floor(30 * widthRatio);
-            // var elementHeight = (chart.innerRadius * 2);
-
-            // Pick a new font size so it will not be larger than the height of label.
-            //var fontSizeToUse = Math.min(newFontSize, elementHeight);
-
-            //Set font settings to draw it correctly.
-            // ctx.textAlign = 'center';
-            // ctx.textBaseline = 'middle';
-            // var centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
-            // var centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
-            // ctx.font = fontSizeToUse+"px " + fontStyle;
-            // ctx.fillStyle = color;
-
-            //Draw text in center
-            // ctx.fillText(txt, centerX, centerY-10);
-            // ctx.fillText(txt, centerX, centerY+10);
           }
         }
       })
-
       this.renderChart(this.chartdata, this.options)
     }
   },

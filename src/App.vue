@@ -26,7 +26,7 @@
             <router-link to="/menu">BY MENU</router-link>
           </v-tab>
           <v-tab>
-            <router-link to="/sample">BY MONTH</router-link>
+            <router-link to="/month">BY MONTH</router-link>
           </v-tab>
         </v-tabs>
       </div>

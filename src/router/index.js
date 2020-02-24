@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Quarter from '../views/Quarter.vue'
 import MenuInfo from '../views/Menu.vue'
+import MonthInfo from '../views/Month.vue'
 import Login from '../views/Login.vue'
 import DoughnutSample from '../views/DoughnutSample.vue'
 //import BarSample from '../views/BarSample.vue'
@@ -34,6 +35,11 @@ const routes = [
     path: '/menu',
     name: 'Menu',
     component: MenuInfo
+  },
+  {
+    path: '/month',
+    name: 'Month',
+    component: MonthInfo
   },
   {
     path: '/sample',

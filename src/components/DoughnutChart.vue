@@ -35,8 +35,11 @@
               label: 'Data One',
               backgroundColor: ['#ff8400','#f39e15','#ffbb0e','#ffd569'],
               barThickness: 10,
+              // borderWidth: 1,
+              // borderColor: '#000000',
               categoryPercentage: 1,
               data: [this.getRandomInt(), this.getRandomInt(), this.getRandomInt()]
+              //data: []
             },
             // {
             //   label: 'Data two',
