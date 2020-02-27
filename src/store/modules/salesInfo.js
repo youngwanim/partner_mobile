@@ -25,7 +25,21 @@ const state = {
   menuSalesChartInfo: {},
   monthSalesInfo: {
     date_label: '2019-11',
-    
+    dataset: [
+      {
+        labels: 'Data One',
+        backgroundColor: ['#ff8400','#f39e15','#ffbb0e','#ffd569'],
+        barThickness: 10,
+        categoryPercentage: 1,
+        data: [70, 60, 50]
+      }
+    ],
+    disheInfo: [],
+    dishSold: 0,
+    dishOrder: 0,
+    customerCount: 0,
+    totalRevenue: 0,
+    mostPopular: 0
   },
   firstOrderDate: ''
 }

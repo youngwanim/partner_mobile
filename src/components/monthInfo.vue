@@ -37,7 +37,7 @@
       <v-card class="ma-4">
         <v-card-title class=" subtitle-1 amber--text text--darken-3 font-weight-black">Monthly menu sales</v-card-title>
         <v-divider class="ml-4 mr-4"></v-divider>
-        <v-row justify="end">
+        <!-- <v-row justify="end">
           <v-col cols="7"
             md="2">
             <v-select class="quarter-select mr-4"
@@ -51,16 +51,19 @@
               outlined
             ></v-select>
           </v-col>
-        </v-row>
-        <BarSalesCount :width="274" :height="144" :chartdata="getSalesChartInfo"></BarSalesCount>
+        </v-row> -->
+        <DoughnutChart :width="200" :height="400" :chartdata="monthSalesInfo.dataset"></DoughnutChart>
         <v-card-text class="pb-5 font-weight-bold">
            <v-list dense>
               <template>
-                <v-list-item  class="pl-0 pr-0">
-                  <v-list-item-content class="grey--text text--darken-1">Total # of dishes sold</v-list-item-content>
-                  <v-list-item-content><p class="text-right mb-0 grey--text text--darken-1">¥{{getSalesInfo.total_sales_count}} dish(es)</p></v-list-item-content>
+                <v-list-item v-for="(item, i) in monthSalesInfo.dishInfo" :key="i" class="pl-0 pr-0">
+                  <!-- <v-list-item-content> -->
+                    <span class="dot" :style="getColor(i)"></span>
+                  <!-- </v-list-item-content> -->
+                  <v-list-item-content class="grey--text text--darken-1">{{item.menu_name}}</v-list-item-content>
+                  <v-list-item-content><p class="text-right mb-0 grey--text text--darken-1">{{item.menu_count}} dish(es)</p></v-list-item-content>
                 </v-list-item>
-                <v-list-item  class="pl-0 pr-0">
+                <!-- <v-list-item  class="pl-0 pr-0">
                   <v-list-item-content class="grey--text text--darken-1">Promotional discount</v-list-item-content>
                   <v-list-item-content><p class="text-right mb-0 deep-orange--text text-accent-4">-¥{{getSalesInfo.promotion_discount}}</p></v-list-item-content>
                 </v-list-item>
@@ -71,23 +74,153 @@
                 <v-list-item  class="pl-0 pr-0 grey--text">
                   <v-list-item-content class="grey--text text--darken-1">Profit share (5%)</v-list-item-content>
                   <v-list-item-content><p class="text-right mb-0 grey--text text--darken-1">¥{{getSalesInfo.total_sales_revenue * 0.05}}</p></v-list-item-content>
-                </v-list-item>
-
-
+                </v-list-item> -->
               </template>
             </v-list>
          </v-card-text>
+      </v-card>
+      <v-card class="ma-4 sales-analysis">
+        <v-card-title class=" subtitle-1 amber--text text--darken-3 font-weight-black">Sales analysis</v-card-title>
+        <v-divider class="ml-4 mr-4"></v-divider>
+        <v-container fluid >
+          <v-row class="pb-4 border-bottom ml-2 mr-2"
+            :align="center"
+            :justify="center">
+            <v-col :cols="4" class="border-right pa-0">
+              <v-card flat class="ma-0">
+                <v-img class="ml-8 mr-8 mt-1 mb-1" src="/drawable-xxhdpi/ic_dish.png"></v-img>
+                <div class="list-data-value" align="center">1111</div>
+                <div class="list-data-desc" align="center">dishes sold</div>
+              </v-card>
+            </v-col>
+            <!-- <v-divider vertical></v-divider> -->
+            <v-col :cols="4" class="border-right pa-0">
+              <v-card flat class="ma-0">
+                <v-img class="ml-8 mr-8 mt-1 mb-1" src="/drawable-xxhdpi/ic_order.png"></v-img>
+                <div class="list-data-value" align="center">1111</div>
+                <div class="list-data-desc" align="center">orders</div>
+              </v-card>
+            </v-col>
+            <!-- <v-divider vertical></v-divider> -->
+            <v-col :cols="4" class="pa-0">
+              <v-card flat class="ma-0">
+                <v-img class="ml-8 mr-8 mt-1 mb-1" src="/drawable-xxhdpi/ic_customer.png"></v-img>
+                <div class="list-data-value" align="center">1111</div>
+                <div class="list-data-desc" align="center">customers</div>
+              </v-card>
+            </v-col>
+          </v-row>
+          <v-list class="pt-0 pb-0 pl-2 pr-2">
+              <template>
+                <v-list-item class="list-item-common list-price border-bottom pt-2 pb-2 pl-0 pr-0">
+                  <!-- <v-list-item-content> -->
+                  <v-img max-width="31" class="ml-6 mr-6 mt-1 mb-1" src="/drawable-xxhdpi/ic_price.png"></v-img>
+                  <!-- </v-list-item-content> -->
+                  <v-list-item-content class="grey--text text--darken-1 pt-0 pb-0">
+                    <v-list class="pt-0 pb-0" dense>
+                      <template>
+                        <v-list-item dense class="list-data-value list-price-revenue pl-0 pr-0">
+                          ¥ {{monthSalesInfo.totalRevenue}}
+                        </v-list-item>
+                        <v-list-item dense class="list-data-desc pl-0 pr-0">
+                          Total sales revenue of the month
+                        </v-list-item>
+                      </template>
+                    </v-list>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item class="list-item-common list-best pt-2 pb-2 pl-0 pr-0">
+                  <!-- <v-list-item-content> -->
+                  <v-img max-width="31" class="ml-6 mr-6 mt-1 mb-1" src="/drawable-xxhdpi/ic_best.png"></v-img>
+                  <!-- </v-list-item-content> -->
+                  <v-list-item-content class="grey--text text--darken-1 pt-0 pb-0">
+                    <v-list class="pt-0 pb-0" dense>
+                      <template>
+                        <v-list-item dense class="list-data-desc list-best-title pl-0 pr-0">
+                          Most popular menu of the month
+                        </v-list-item>
+                        <v-list-item dense disabled class="list-best-menu pl-0 pr-0">
+                          Total sales revenue of the month
+                        </v-list-item>
+                      </template>
+                    </v-list>
+                  </v-list-item-content>
+                </v-list-item>
+                <!-- <v-list-item  class="pl-0 pr-0">
+                  <v-list-item-content class="grey--text text--darken-1">Promotional discount</v-list-item-content>
+                  <v-list-item-content><p class="text-right mb-0 deep-orange--text text-accent-4">-¥{{getSalesInfo.promotion_discount}}</p></v-list-item-content>
+                </v-list-item>
+                <v-list-item  class="pl-0 pr-0">
+                  <v-list-item-content>Total sales revenue</v-list-item-content>
+                  <v-list-item-content><p class="text-right mb-0">¥{{getSalesInfo.total_sales_revenue}}</p></v-list-item-content>
+                </v-list-item>
+                <v-list-item  class="pl-0 pr-0 grey--text">
+                  <v-list-item-content class="grey--text text--darken-1">Profit share (5%)</v-list-item-content>
+                  <v-list-item-content><p class="text-right mb-0 grey--text text--darken-1">¥{{getSalesInfo.total_sales_revenue * 0.05}}</p></v-list-item-content>
+                </v-list-item> -->
+              </template>
+            </v-list>
+
+        </v-container>
+        <!-- <v-divider class="ml-4 mr-4"></v-divider> -->
+        <!-- <v-card-text class="pb-5 font-weight-bold">
+           <v-list dense>
+              <template>
+                <v-list-item v-for="(item, i) in monthSalesInfo.dishInfo" :key="i" class="pl-0 pr-0">
+
+                  <span class="dot" :style="getColor(i)"></span>
+
+                  <v-list-item-content class="grey--text text--darken-1">{{item.menu_name}}</v-list-item-content>
+                  <v-list-item-content><p class="text-right mb-0 grey--text text--darken-1">{{item.menu_count}} dish(es)</p></v-list-item-content>
+                </v-list-item>
+              </template>
+            </v-list>
+         </v-card-text> -->
+        <!-- <v-list class="pt-0 pb-0 pl-5 pr-5">
+            <template>
+              <v-list-item class="list-item-common list-price border-bottom pl-0 pr-0">
+                <v-img max-width="31" class="ml-6 mr-6 mt-1 mb-1" src="/drawable-xxhdpi/ic_price.png"></v-img>
+                <v-list-item-content class="grey--text text--darken-1 pt-0 pb-0">
+                  <v-list class="pt-0 pb-0" dense>
+                    <template>
+                      <v-list-item dense class="list-data-value list-price-revenue pl-0 pr-0">
+                        ¥ {{monthSalesInfo.totalRevenue}}
+                      </v-list-item>
+                      <v-list-item dense class="list-data-desc pl-0 pr-0">
+                        Total sales revenue of the month
+                      </v-list-item>
+                    </template>
+                  </v-list>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item class="list-item-common list-best pl-0 pr-0">
+                <v-img max-width="31" class="ml-6 mr-6 mt-1 mb-1" src="/drawable-xxhdpi/ic_best.png"></v-img>
+                <v-list-item-content class="grey--text text--darken-1 pt-0 pb-0">
+                  <v-list class="pt-0 pb-0" dense>
+                    <template>
+                      <v-list-item dense class="list-data-desc list-best-title pl-0 pr-0">
+                        Most popular menu of the month
+                      </v-list-item>
+                      <v-list-item dense disabled class="list-best-menu pl-0 pr-0">
+                        Total sales revenue of the month
+                      </v-list-item>
+                    </template>
+                  </v-list>
+                </v-list-item-content>
+              </v-list-item>
+            </template>
+          </v-list> -->
       </v-card>
     </div>
   </div>
 </template>
 
 <script>
-  import BarSalesCount from './charts/Bar.js'
+  import DoughnutChart from './charts/Doughnut.js'
   import {mapGetters, mapMutations, mapActions} from 'vuex'
   export default {
     components: {
-      BarSalesCount
+      DoughnutChart
     },
     data () {
       return {
@@ -97,23 +230,30 @@
         picker: new Date().toISOString().substr(0, 7),
         date: new Date().toISOString().substr(0, 7),
         menu: false,
-        datacollection: {
-          labels: ['2019.10', '2019.11', '2019.12'],
-          datasets: [
-            {
-              label: 'Data One',
-              backgroundColor: '#007979',
-              data: [0, 1, 2]
-            }, {
-              label: 'Data two',
-              backgroundColor: '#f87979',
-              data: [0, 1, 2]
-            }, {
-              label: 'Data three',
-              backgroundColor: '#000079',
-              data: [0, 1, 2]
-            }
-          ]
+        monthSalesInfo: {
+          date_label: '2019-11',
+          dataset: {
+            labels: ['JAN', 'FEB', 'MAR'],
+            datasets: [
+              {
+                labels: 'Data One',
+                backgroundColor: ['#ff8400','#f39e15','#ffbb0e','#ffd569'],
+                barThickness: 10,
+                categoryPercentage: 1,
+                data: [70, 60, 50]
+              }
+            ],
+          },
+          dishInfo: [
+            {menu_name:'Stir fried something', menu_count:1},
+            {menu_name:'Stir fried else', menu_count:2},
+            {menu_name:'Stir fried wtf', menu_count:3},
+                ],
+          dishSold: 0,
+          dishOrder: 0,
+          customerCount: 0,
+          totalRevenue: 0,
+          mostPopular: 0
         },
         quarter: [
           {
@@ -301,8 +441,16 @@
           ]
         }
       },
-      getRandomInt () {
-        return Math.floor(Math.random() * (50 - 5 + 1)) + 5
+      getColor (i) {
+        let g=127
+        let rgb = 'rgb(255, {%g}, 0)'
+        g += (21 * i)
+
+        while (g > 255) {
+          g -= 255
+        }
+        rgb = rgb.replace('{%g}', g.toString())
+        return { backgroundColor: rgb}
       }
     }
   }
@@ -337,5 +485,53 @@
   .small {
     max-width: 600px;
     margin:  150px auto;
+  }
+  .border-right {
+    border-right: 1px dashed #e5e5e5;
+  }
+  .border-bottom {
+    border-bottom: 1px dashed #e5e5e5;
+  }
+  .dot {
+    height: 25px;
+    width: 25px;
+    background-color: #ff8400;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 10px;
+  }
+  .sales-analysis{
+    .list-data-value {
+      font-size: 18px;
+      font-weight: normal;
+      min-height: 18px;
+    }
+    .list-data-desc {
+      font-size: 10px;
+      font-weight: bold;
+      color: #333333;
+      min-height: 10px;
+    }
+    .list-price {
+      .list-price-revenue{
+        font-size: 18px;
+        min-height: 18px;
+        margin-bottom: 7px;
+      }
+      .list-price-desc{
+        font-size: 10px;
+        min-height: 10px;
+      }
+    }
+    .list-best {
+      .list-best-title{
+        margin-bottom: 7px;
+      }
+      .list-best-menu{
+        font-size: 10px;
+        color: #808080;
+        min-height: 10px;
+      }
+    }
   }
 </style>
