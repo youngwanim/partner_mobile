@@ -23,7 +23,7 @@ start_date={start_date}&end_date={end_date}',
     method: 'get',
     headers: get_header_info
   },
-  getSalesInfoperMenu: {
+  getMonthSales: {
     url: st_config.resApi_url + '/analdb/partners/menusales?res_type={res_type}&\
 start_date={start_date}&end_date={end_date}',
     method: 'get',

@@ -113,6 +113,7 @@ function transformMenuSalesList (start_date, end_date, data) {
 //   )
 // ))
 
+
 module.exports = {
   createMenuSalesChart,
   transformMenuSalesList

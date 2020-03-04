@@ -263,7 +263,6 @@
       ]),
       ...mapActions('salesinfo', [
         'GET_MENU_INFO',
-        'GET_SALES_INFO_PER_MENU',
         'GET_SINGLE_MENU_SALES_INFO'
       ]),
       loadingMenuSalesStatus (menu_id) {

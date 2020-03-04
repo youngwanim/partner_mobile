@@ -2,11 +2,12 @@ import router from '@/router'
 import api from '@/api/api.js'
 import hDate from './util/date.js'
 import chart from './util/chart.js'
+import chart_monthInfo from './util/chart/monthInfo_chart.js'
 
 const type = {
   GET_MENU_INFO: 'GET_MENU_INFO',
   GET_SALES_INFO: 'GET_SALES_INFO',
-  GET_SALES_INFO_PER_MENU: 'GET_SALES_INFO_PER_MENU',
+  GET_MONTH_SALES_INFO: 'GET_MONTH_SALES_INFO',
   GET_SINGLE_MENU_SALES_INFO: 'GET_SINGLE_MENU_SALES_INFO'
 }
 
@@ -23,24 +24,7 @@ const state = {
   menuInfo: [],
   menuSalesInfo: {},
   menuSalesChartInfo: {},
-  monthSalesInfo: {
-    date_label: '2019-11',
-    dataset: [
-      {
-        labels: 'Data One',
-        backgroundColor: ['#ff8400','#f39e15','#ffbb0e','#ffd569'],
-        barThickness: 10,
-        categoryPercentage: 1,
-        data: [70, 60, 50]
-      }
-    ],
-    disheInfo: [],
-    dishSold: 0,
-    dishOrder: 0,
-    customerCount: 0,
-    totalRevenue: 0,
-    mostPopular: 0
-  },
+  monthSalesInfo: {yearmonth: [], data: {}},
   firstOrderDate: ''
 }
 
@@ -52,6 +36,7 @@ const getters = {
   getMenuInfo: state => state.menuInfo,
   getMenuSalesInfo: state => state.menuSalesInfo,
   getMenuSalesChartInfo: state => state.menuSalesChartInfo,
+  getMonthSalesInfo: state => state.monthSalesInfo,
   getRestaurantID: state => state.restaurant_id,
   getQuarterList: state => state.quarterList,
   getSelectedQuarter: state => state.selectedQuarter,
@@ -100,6 +85,9 @@ const mutations = {
     let menu_id = payload.menu_id,
         data = payload.data
     state.menuInfo[menu_id].chart = data
+  },
+  setMonthSalesInfo(state, payload) {
+    state.monthSalesInfo = payload
   },
   setLoadingMenuDetail(state, payload) {
     let menu_id = payload.menu_id,
@@ -204,50 +192,20 @@ const actions = {
       router.push('/')
     })
   },
-  [type.GET_SALES_INFO_PER_MENU]({commit, state}, payload) {
+  [type.GET_MONTH_SALES_INFO]({commit, state}, payload) {
     let res_type = payload.res_type
     let start_date = payload.start_date
     let end_date = payload.end_date
 
     state.bLoading = true
-    api.async_call('getSalesInfoperMenu', '', {
+    api.async_call('getMonthSales', '', {
       '{res_type}': res_type,
-      // '{restaurant_id}': state.restaurant_id,
       '{start_date}': start_date,
       '{end_date}': end_date
     }).then((result) => {
-      //returned data is not array. transform the data into array
-      let salesArray = []
-      let salesChart = {}
-      // let menu_index = 0
-      for (let key in result.data.data) {
-        let item = result.data.data[key]
-        // menu_index += 1
-        item['panel'] = []
-        item['date_index'] = 0
-        item['total_sales_revenue'] = Math.round(
-          item['total_sales_revenue'] * Math.pow(10,2)
-        ) / Math.pow(10,2)
-        item['promotion_discount'] = Math.round(
-          item['promotion_discount'] * Math.pow(10,2)
-        ) / Math.pow(10,2)
-        salesArray.push(item)
-        salesChart[key] = {
-          labels : state.yearList[state.selectedYearIndex].chart_label,
-          datasets : [
-            {
-              label: 'MENU ',
-              backgroundColor: '#ffb700',
-              barThickness: 20,
-              data: item.label
-            }
-          ]
-        }
-      }
-      console.log('salesChart: ', JSON.stringify(salesChart))
-      console.log('state.createYearList.chart_label: ', JSON.stringify(state.yearList[state.selectedYearIndex].chart_label))
-      commit('setMenuSalesChartInfo', salesChart)
-      commit('setMenuSalesInfo', salesArray)
+      let monthSales = chart_monthInfo.transformMonthSalesList(start_date, end_date, result.data.data)
+      commit('setMonthSalesInfo', monthSales)
+      console.log('monthSales: ', monthSales)
       state.bLoading = false
     }).catch((error) => {
       console.log('error on sales API, ', error)
