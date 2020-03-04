@@ -37,7 +37,8 @@
       <v-card class="ma-4">
         <v-card-title class=" subtitle-1 amber--text text--darken-3 font-weight-black">Monthly menu sales</v-card-title>
         <v-divider class="ml-4 mr-4"></v-divider>
-        <DoughnutChart :width="200" :height="400" :chartdata="monthSalesInfo.dataset"></DoughnutChart>
+        <!-- <DoughnutChart :width="200" :height="400" :chartdata="monthSalesInfo.dataset"></DoughnutChart> -->
+        <DoughnutChart :width="200" :height="400" :chartdata="getChartData()"></DoughnutChart>
         <v-card-text class="pb-5 font-weight-bold">
            <v-list dense>
               <template>
@@ -55,8 +56,8 @@
         <v-divider class="ml-4 mr-4"></v-divider>
         <v-container fluid >
           <v-row class="pb-4 border-bottom ml-2 mr-2"
-            :align="center"
-            :justify="center">
+            align="center"
+            justify="center">
             <v-col :cols="4" class="border-right pa-0">
               <v-card flat class="ma-0">
                 <v-img class="ml-8 mr-8 mt-1 mb-1" src="/drawable-xxhdpi/ic_dish.png"></v-img>
@@ -133,6 +134,7 @@
         currentQuarter: null,
         picker: new Date().toISOString().substr(0, 7),
         date: new Date().toISOString().substr(0, 7),
+        bDateLoaded: false,
         menu: false,
         monthSalesInfo: {
           date_label: '2019-11',
@@ -323,6 +325,14 @@
         } else{
           return 'SHOW DETAILS'
         }
+      },
+      getChartData () {
+        console.log('getMonthSalesInfo: ', this.getMonthSalesInfo)
+        if (!this.bDateLoaded) {
+          this.date = this.getMonthSalesInfo.yearmonth[this.getMonthSalesInfo.yearmonth.length -1]
+          this.bDateLoaded = true
+        }
+        return this.getMonthSalesInfo.data[this.date].labels
       },
       fillData () {
         this.datacollection = {
