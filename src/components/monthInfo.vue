@@ -10,6 +10,7 @@
       <v-row>
         <v-col cols="6" class="pl-8">
           <v-menu
+            ref="menu"
             v-model="menu"
             :close-on-content-click="false"
             :nudge-right="40"
@@ -26,7 +27,12 @@
                 v-on="on"
               ></v-text-field>
             </template>
-            <v-date-picker v-model="date" @click:month="test_showpicker" no-title scrollable type="month" @input="menu = false">
+            <v-date-picker v-model="date"
+              @click:month="test_showpicker"
+              no-title type="month"
+              :allowed-dates="allowedDates"
+              :min="minDate"
+              :max="maxDate">
               <v-spacer></v-spacer>
               <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
               <v-btn text color="primary" @click="$refs.menu.save(date)">OK</v-btn>
@@ -38,14 +44,14 @@
         <v-card-title class=" subtitle-1 amber--text text--darken-3 font-weight-black">Monthly menu sales</v-card-title>
         <v-divider class="ml-4 mr-4"></v-divider>
         <!-- <DoughnutChart :width="200" :height="400" :chartdata="monthSalesInfo.dataset"></DoughnutChart> -->
-        <DoughnutChart :width="200" :height="400" :chartdata="getChartData()"></DoughnutChart>
-        <v-card-text class="pb-5 font-weight-bold">
+        <DoughnutChart class="ml-9 mr-9" :width="400" :height="300" :chartdata="getChartData()" :charttext="chartText"></DoughnutChart>
+        <v-card-text class="pb-0 pt-0 font-weight-bold">
            <v-list dense>
               <template>
-                <v-list-item v-for="(item, i) in monthSalesInfo.dishInfo" :key="i" class="pl-0 pr-0">
+                <v-list-item v-for="(item, i) in getMonthSalesInfo.data[date].menus" :key="i" class="pl-0 pr-0">
                   <span class="dot" :style="getColor(i)"></span>
                   <v-list-item-content class="grey--text text--darken-1">{{item.menu_name}}</v-list-item-content>
-                  <v-list-item-content><p class="text-right mb-0 grey--text text--darken-1">{{item.menu_count}} dish(es)</p></v-list-item-content>
+                  <v-list-item-action><p class="text-right mb-0 grey--text text--darken-1">{{item.menu_count}} dish(es)</p></v-list-item-action>
                 </v-list-item>
               </template>
             </v-list>
@@ -61,21 +67,21 @@
             <v-col :cols="4" class="border-right pa-0">
               <v-card flat class="ma-0">
                 <v-img class="ml-8 mr-8 mt-1 mb-1" src="/drawable-xxhdpi/ic_dish.png"></v-img>
-                <div class="list-data-value" align="center">1111</div>
+                <div class="list-data-value" align="center">{{getMonthSalesInfo.data[date].sales_count}}</div>
                 <div class="list-data-desc" align="center">dishes sold</div>
               </v-card>
             </v-col>
             <v-col :cols="4" class="border-right pa-0">
               <v-card flat class="ma-0">
                 <v-img class="ml-8 mr-8 mt-1 mb-1" src="/drawable-xxhdpi/ic_order.png"></v-img>
-                <div class="list-data-value" align="center">1111</div>
+                <div class="list-data-value" align="center">{{getMonthSalesInfo.data[date].order_count}}</div>
                 <div class="list-data-desc" align="center">orders</div>
               </v-card>
             </v-col>
             <v-col :cols="4" class="pa-0">
               <v-card flat class="ma-0">
                 <v-img class="ml-8 mr-8 mt-1 mb-1" src="/drawable-xxhdpi/ic_customer.png"></v-img>
-                <div class="list-data-value" align="center">1111</div>
+                <div class="list-data-value" align="center">{{getMonthSalesInfo.data[date].customer_count}}</div>
                 <div class="list-data-desc" align="center">customers</div>
               </v-card>
             </v-col>
@@ -88,7 +94,7 @@
                   <v-list class="pt-0 pb-0" dense>
                     <template>
                       <v-list-item dense class="list-data-value list-price-revenue pl-0 pr-0">
-                        ¥ {{monthSalesInfo.totalRevenue}}
+                        ¥ {{getMonthSalesInfo.data[date].sales_revenue}}
                       </v-list-item>
                       <v-list-item dense class="list-data-desc pl-0 pr-0">
                         Total sales revenue of the month
@@ -136,6 +142,9 @@
         date: new Date().toISOString().substr(0, 7),
         bDateLoaded: false,
         menu: false,
+        minDate: '2016-01',
+        maxDate: '2020-03',
+        chartText: '0000',
         monthSalesInfo: {
           date_label: '2019-11',
           dataset: {
@@ -206,82 +215,7 @@
               data: [177, 255, 155]
             }
           ]
-        },
-        ex_menuStatus: [
-          {
-            menu_id: 82,
-            menu_name: 'Eggplant Fried Rice with Lotus root Tteok-galbi',
-            menu_name_cn: '茄子炒饭配莲藕牛肉饼',
-            image_thumbnail: 'bumps/fried/img_thumb_friedrice.jpg',
-            price: 58,
-            sales_status: true,
-            sales_start_date: '2018-10-10',
-            sales_end_date: '',
-            total_sales_revenue: 100,
-            total_sales_count: 200,
-            promotion_discount: 100,
-            labels: [],
-            sales_detail: [
-              40, 194, 0
-            ],
-            panel: []
-          },
-          {
-            menu_id: 83,
-            menu_name: 'Popeye Spinach Fried Rice with Pork Mushroom Bulgogi',
-            menu_name_cn: '大力水手炒饭配猪肉炒蘑菇',
-            image_thumbnail: 'bumps/popeye/img_thumb_popeye.jpg',
-            price: 58,
-            sales_status: true,
-            sales_start_date: '2018-10-10',
-            sales_end_date: '',
-            total_sales_revenue: 100,
-            total_sales_count: 200,
-            promotion_discount: 100,
-            labels: [],
-            sales_detail: [
-              40, 194, 200
-            ],
-            panel: []
-          },
-          {
-            menu_id: 113,
-            menu_name: 'Black bean sauce with shrimp & egg fried rice',
-            menu_name_cn: '炸酱虾仁鸡蛋炒饭',
-            image_thumbnail: 'bumps/bbsfried/img_thumb_blackbeansaucerice.jpg',
-            price: 58,
-            sales_status: true,
-            sales_start_date: '2018-10-10',
-            sales_end_date: '',
-            total_sales_revenue: 100,
-            total_sales_count: 200,
-            promotion_discount: 100,
-            labels: [],
-            sales_detail: [
-              0, 194, 100
-            ],
-            panel: []
-          },
-          {
-            menu_id: 114,
-            menu_name: 'Egg Fried Rice and Eggplant with Oyster Sauce',
-            menu_name_cn: '蚝油炒茄子配鸡蛋炒饭',
-            image_thumbnail: 'bumps/efroyster/img_thumb_eggricewitheggplant.jpg',
-            price: 58,
-            sales_status: false,
-            sales_start_date: '2018-10-10',
-            sales_end_date: '',
-            total_sales_revenue: 100,
-            total_sales_count: 200,
-            promotion_discount: 100,
-            labels: [],
-            sales_detail: [
-              40, 194, 200
-            ],
-            panel: []
-          }
-
-        ]
+        }
       }
     },
     created () {
@@ -292,12 +226,14 @@
       })
     },
     mounted () {
+      this.minDate = this.getMonthSalesInfo.yearmonth[0]
+      this.maxDate = this.getMonthSalesInfo.yearmonth[this.getMonthSalesInfo.yearmonth.length-1]
     },
     computed: {
       ...mapGetters('salesinfo', [
         'getLoading',
         'getMonthSalesInfo'
-      ]),
+      ])
     },
     methods: {
       ...mapMutations('salesinfo', [
@@ -311,41 +247,30 @@
       test_showpicker() {
         console.log(this.date)
       },
-      quarterSelect (value) {
-        this.setSelectedQuarter(this.currentQuarter)
-        this.GET_SALES_INFO({
-          res_type: 'month',
-          start_date: value.start_date,
-          end_date: value.end_date
-        })
-      },
-      detailTitle (panel) {
-        if (panel.length > 0) {
-          return 'HIDE DETAILS'
-        } else{
-          return 'SHOW DETAILS'
+      allowedDates (val) {
+        if (this.getMonthSalesInfo.yearmonth.indexOf(val) > -1) {
+          console.log("allowedDates: ",val, true)
+          return true
         }
+        console.log("allowedDates: ",val, false)
+        return false
       },
+      // minDate () {
+      //   console.log("minDate: ", this.getMonthSalesInfo.yearmonth[0])
+      //   return this.getMonthSalesInfo.yearmonth[0]
+      // },
+      // maxDate () {
+      //   console.log("maxDate: ", this.getMonthSalesInfo.yearmonth[this.getMonthSalesInfo.yearmonth.length-1])
+      //   return this.getMonthSalesInfo.yearmonth[this.getMonthSalesInfo.yearmonth.length-1]
+      // },
       getChartData () {
         console.log('getMonthSalesInfo: ', this.getMonthSalesInfo)
         if (!this.bDateLoaded) {
           this.date = this.getMonthSalesInfo.yearmonth[this.getMonthSalesInfo.yearmonth.length -1]
           this.bDateLoaded = true
         }
+        this.chartText = this.getMonthSalesInfo.data[this.date].sales_count.toString()
         return this.getMonthSalesInfo.data[this.date].labels
-      },
-      fillData () {
-        this.datacollection = {
-          labels: ['2019.10', '2019.11','2019.12'],
-          datasets: [
-            {
-              label: 'MENU 1',
-              backgroundColor: '#ffb700',
-              barThickness: 30,
-              data: [133, 255, 155]
-            }
-          ]
-        }
       },
       getColor (i) {
         let g=127

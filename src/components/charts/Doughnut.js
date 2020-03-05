@@ -9,6 +9,9 @@ export default {
     chartdata: {
       type: Object,
       default: null
+    },
+    charttext: {
+      type: String
     }
   },
   data () {
@@ -61,7 +64,7 @@ export default {
         cutoutPercentage: 60,
         elements: {
           center: {
-            text: ['0001','dishes'],
+            text: ['0000','dishes'],
             color: ['#333333', '#333333'], //Default black
             fontSize: [20, 15],
             fontWeight: [700, 100],
@@ -88,6 +91,7 @@ export default {
       } else{
         this.options.plugins.datalabels.labels.title.color = '#000000'
       }
+      this.options.elements.center.text[0] = this.charttext
       Chart.plugins.register(ChartJsPluginDataLabels);
       Chart.plugins.register({
         beforeDraw: function (chart) {

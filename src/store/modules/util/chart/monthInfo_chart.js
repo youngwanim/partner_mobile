@@ -60,18 +60,24 @@ function createTargetYearMonthArray(start_date, end_date) {
 function createMonthMenuData(monthInfo, dateKey, data, index) {
   let chart = data_obj.getChart()
   let menu_array = [],
+      menu_data = null,
       sales_count = 0,
       sales_revenue = 0
   //put chart
   for (let key in data.menus) {
-    chart.labels.push(data.menus[key].menu_name)
-    chart.datasets[0].data.push(data.menus[key].sales_count[index])
-    // monthInfo.data[dateKey].menus.push(data.menus[key].menu_name)
-    // monthInfo.data[dateKey].sales_count += data.menus[key].sales_count[index]
-    // monthInfo.data[dateKey].sales_revenue += data.menus[key].sales_revenue[index]
-    menu_array.push(data.menus[key].menu_name)
-    sales_count += data.menus[key].sales_count[index]
-    sales_revenue += data.menus[key].sales_revenue[index]
+    menu_data = {}
+    if (data.menus[key].sales_count[index] > 0) {
+      chart.labels.push(data.menus[key].menu_name)
+      chart.datasets[0].data.push(data.menus[key].sales_count[index])
+      // monthInfo.data[dateKey].menus.push(data.menus[key].menu_name)
+      // monthInfo.data[dateKey].sales_count += data.menus[key].sales_count[index]
+      // monthInfo.data[dateKey].sales_revenue += data.menus[key].sales_revenue[index]
+      menu_data.menu_name = data.menus[key].menu_name
+      menu_data.menu_count = data.menus[key].sales_count[index]
+      menu_array.push(menu_data)
+      sales_count += data.menus[key].sales_count[index]
+      sales_revenue += data.menus[key].sales_revenue[index]
+    }
   }
   if (sales_count > 0) {
     monthInfo.yearmonth.push(dateKey)
