@@ -45,19 +45,27 @@
             active-class="deep-purple--text text--accent-4"
           >
             <v-list-item>
-              <v-list-item-title>Foo</v-list-item-title>
+              <v-list-item-title>Overview</v-list-item-title>
             </v-list-item>
 
             <v-list-item>
-              <v-list-item-title>Bar</v-list-item-title>
+              <v-list-item-title>Business report</v-list-item-title>
             </v-list-item>
 
             <v-list-item>
-              <v-list-item-title>Fizz</v-list-item-title>
+              <v-list-item-title>Media & event report</v-list-item-title>
             </v-list-item>
 
             <v-list-item>
-              <v-list-item-title>Buzz</v-list-item-title>
+              <v-list-item-title>Notice</v-list-item-title>
+            </v-list-item>
+
+            <v-list-item>
+              <v-list-item-title>Account setting</v-list-item-title>
+            </v-list-item>
+
+            <v-list-item>
+              <v-list-item-title>Logout</v-list-item-title>
             </v-list-item>
           </v-list-item-group>
         </v-list>
