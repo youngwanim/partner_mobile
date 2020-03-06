@@ -13,7 +13,7 @@
             v-for="(item, key, index) in menuInfo"
             v-bind:key="index"
             class="pt-0 pb-4">
-            <v-card class="pa-1"  min-height="200" min-width="300" max-width="360">
+            <v-card class="pa-1"  min-height="200" min-width="300">
               <v-container fluid>
                <v-row justify="start">
                  <v-col

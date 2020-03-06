@@ -29,6 +29,7 @@
             </template>
             <v-date-picker v-model="date"
               @click:month="test_showpicker"
+              @input="menu = false"
               no-title type="month"
               :allowed-dates="allowedDates"
               :min="minDate"
